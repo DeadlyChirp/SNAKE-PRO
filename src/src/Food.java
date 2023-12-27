@@ -5,10 +5,10 @@
 
 
 public class Food {
-    final int x, y;
-    private final double size;
-    private final double rsp;
-    private final long spawnTime;
+    final int x, y; // position
+    private final double size; // initial size
+    private final double rsp; // rate of respawn
+    private final long spawnTime; // in milliseconds
 
     Food(int x, int y, double size, boolean fastSpawn) {
         this.x = x;

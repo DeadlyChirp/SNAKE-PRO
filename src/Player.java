@@ -1,5 +1,8 @@
 // Definir le joueur qui est capable de se déplacer direction et accelleration
 
+// Path: src/Player.java
+
+
 
 abstract class Player {
 
@@ -17,7 +20,7 @@ abstract class Player {
         final Boolean boost;
 
         Move(Double angle, Boolean boost) {
-            if (angle != null && (angle < 0 || angle >= PI2)) {
+            if (angle != null && (angle < 0 || angle >= SlitherModel.PI2)) {
                 throw new IllegalArgumentException("angle not in range 0 to PI2");
             }
             this.angle = angle;

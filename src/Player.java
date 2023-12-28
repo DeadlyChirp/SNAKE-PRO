@@ -56,8 +56,8 @@ abstract class Player {
         }
 
         private Double adjustAngle(SlitherModel model, double adjustment) {
-            // Adjust the angle based on current direction and adjustment value
-            // Implement the logic to change the angle
+            // Ajouter ici la logique pour ajuster l'angle du serpent
+            // Exemple: ajuster l'angle du serpent en fonction de la position de la souris
             return model.getCurrentAngle() + adjustment; // Example adjustment
         }
     }

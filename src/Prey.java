@@ -7,13 +7,14 @@ public class Prey {
     double speed;
     private final double size;
     private final long spawnTime;
+    private final SlitherCanvas canvas;
 
 
     //Prey represente une entite de proie dans le jeu
     //comme food mais avec des deplacements
     //qui peut agrandir et se deplacer
 
-    Prey(double x, double y, double size, int dir, double currentAngle, double angularVelocity, double speed) {
+    Prey(double x, double y, double size, int dir, double currentAngle, double angularVelocity, double speed, SlitherCanvas canvas) {
         this.x = x;
         this.y = y;
         this.size = size;
@@ -21,6 +22,7 @@ public class Prey {
         this.currentAngle = currentAngle;
         this.angularVelocity = angularVelocity;
         this.speed = speed;
+        this.canvas = canvas;
         this.spawnTime = System.currentTimeMillis();
     }
 
@@ -47,14 +49,20 @@ public class Prey {
         y += Math.sin(angularVelocity) * speed;
         // garder la proie dans les limites de l'ecran
         // ajouter ici
+        if (x < 0) x = 0; // Replace 0 with minimum x boundary
+        if (y < 0) y = 0; // Replace 0 with minimum y boundary
+        if (x > canvas.getScreenWidth()) x = canvas.getScreenWidth(); // Corrected
+        if (y > canvas.getScreenHeight()) y = canvas.getScreenHeight(); // Replace screenHeight with actual screen height
     }
 
     // methode pour verifier si la proie a ete mangee par un serpent
     public boolean checkCollision(Snake snake) {
-        // logique pour verifier si la proie a ete mangee par un serpent
-        // ...
-        return false; // return false pour la detection de collision actuelle
+        double snakeHeadX = snake.x; // Assume snake has x and y properties for its head
+        double snakeHeadY = snake.y;
+        double distance = Math.sqrt(Math.pow(snakeHeadX - x, 2) + Math.pow(snakeHeadY - y, 2));
+        return distance < (getRadius() + snake.getHeadRadius()); // Assuming Snake has a method to get head radius
     }
+
 
     // mettre a jour l'etat de la proie
     public void updateState() {

@@ -42,4 +42,40 @@ public class Snake {
         this.body = body; //represente differentes parties du corps du serpent, chaque segment est un element de la deque
         this.gamemodel = gamemodel;
     }
+
+    private double getSnakeBody  (){ //sert a calculer la taille du serpent
+        return Math.min(6, 1 + (body.size() - 2) / 106.0);
+    }
+    double getSnkAngle() { //sert a calculer l'angle du serpent
+        return 0.13 + 0.87 * Math.pow((7 - getSnakeBody()) / 6, 2);
+    }
+
+    double getSnkspeed() { //sert a calculer la vitesse du serpent
+
+        return Math.min(speed / gamemodel.spangdv, 1);
+    }
+
+    private double getFinalspeed() {  //sert a calculer la vitesse finale du serpent
+
+        return gamemodel.nsp1 + gamemodel.nsp2 * getSnakeBody();
+    }
+
+    boolean isBoosting() { //sert a calculer si le serpent accelere ou pas
+
+        return targetspeed > getFinalspeed();
+    }
+
+    double getFood() { //sert a calculer la quantite de nourriture mangee
+
+        return foodAmount;
+    }
+
+    void setFood(double food) { //sert a modifier la quantite de nourriture mangee
+
+        this.foodAmount = food;
+    }
+
+    public double getHeadRadius() {
+        return 6.0 + 4.0 * getSnakeBody(); // 6.0 est la taille de la tete du serpent et 4.0 est la taille de chaque partie du corps
+    }
 }

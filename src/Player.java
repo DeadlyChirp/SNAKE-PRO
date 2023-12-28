@@ -3,6 +3,8 @@
 // Path: src/Player.java
 
 
+import java.awt.*;
+import java.awt.event.KeyEvent;
 
 abstract class Player {
 
@@ -35,12 +37,31 @@ abstract class Player {
 
         @Override
         public Move action(SlitherModel model) {
-            // Implémentez la logique pour lire les entrées clavier (WASD ou flèches)
-            // et retournez un nouvel objet Move
+            // Init angle et boost
+            Double angle = null; // Null = pas de changement d'angle
+            Boolean boost = false; // False = pas de boost
 
-            return new Move(null, null);
+
+            if (GameManager.isKeyPressed(KeyEvent.VK_W)) {
+                boost = true;
+            }
+            if (GameManager.isKeyPressed(KeyEvent.VK_A)) {
+                angle = model.getCurrentAngle() - 0.1; // Adjust angle left
+            }
+            if (GameManager.isKeyPressed(KeyEvent.VK_D)) {
+                angle = model.getCurrentAngle() + 0.1; // Adjust angle right
+            }
+
+            return new Move(angle, boost);
+        }
+
+        private Double adjustAngle(SlitherModel model, double adjustment) {
+            // Adjust the angle based on current direction and adjustment value
+            // Implement the logic to change the angle
+            return model.getCurrentAngle() + adjustment; // Example adjustment
         }
     }
+
 
     class PlayerMouse extends Player {
         PlayerMouse(String name) {
@@ -49,12 +70,20 @@ abstract class Player {
 
         @Override
         public Move action(SlitherModel model) {
-            // Implémentez la logique pour lire les entrées de la souris
-            // et retournez un nouvel objet Move
+            Point mousePosition = GameManager.getMousePosition();
+            Double angle = calculateAngleToMouse(model, mousePosition);
+            Boolean boost = GameManager.isMouseClicked();
 
-            return new Move(null, null);
+            return new Move(angle, boost);
+        }
+
+        private Double calculateAngleToMouse(SlitherModel model, Point mousePosition) {
+            double dx = mousePosition.x - model.getX();
+            double dy = mousePosition.y - model.getY();
+            return Math.atan2(dy, dx);
         }
     }
+
 
 
 }

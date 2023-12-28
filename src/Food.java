@@ -7,14 +7,14 @@
 public class Food {
     final int x, y; // position
     private final double size; // initial size
-    private final double rsp; // rate of respawn
+    private final double respawn; // rate of respawn
     private final long spawnTime; // in milliseconds
 
     Food(int x, int y, double size, boolean fastSpawn) {
         this.x = x;
         this.y = y;
         this.size = size;
-        this.rsp = fastSpawn ? 4 : 1;
+        this.respawn = fastSpawn ? 4 : 1;
         spawnTime = System.currentTimeMillis();
     }
 
@@ -23,7 +23,7 @@ public class Food {
     }
 
     double getRadius() {
-        double fillRate = rsp * (System.currentTimeMillis() - spawnTime) / 1200;
+        double fillRate = respawn * (System.currentTimeMillis() - spawnTime) / 1200;
         if (fillRate >= 1) {
             return size;
         } else {

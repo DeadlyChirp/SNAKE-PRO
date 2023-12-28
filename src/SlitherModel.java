@@ -10,4 +10,15 @@ import java.util.Map;
 public class SlitherModel {
     static final double PI2 = Math.PI * 2;
 
+    public double spangdv;
+
+    public Double getCurrentAngle() {
+        return currentAngle;
+    }
+
+    public int getY() {
+    }
+
+    public int getX() {
+    }
 }

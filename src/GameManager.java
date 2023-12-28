@@ -2,14 +2,29 @@
 
 import java.util.ArrayList;
 import java.util.List;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.Point;
+import java.util.HashSet;
+import java.util.Set;
 
 public class GameManager {
     private List<Player> players;
     private SlitherModel gameModel;
+    private static final Set<Integer> pressedKeys = new HashSet<>();
+    private static Point mousePosition = new Point(0, 0);
+    private static boolean mouseClicked = false;
 
     public GameManager(SlitherModel model) {
         this.gameModel = model;
         players = new ArrayList<>();
+
+        // ajout des keylistener et mouselistener
+        // gamePanel.addKeyListener(this);
+        // gamePanel.addMouseListener(this);
+        // gamePanel.addMouseMotionListener(this);
     }
 
     public void addPlayer(Player player) {
@@ -40,6 +55,41 @@ public class GameManager {
             // Ajoutez ici la logique de mise à jour du jeu pour chaque joueur
         }
         // Autres mises à jour du jeu
+    }
+
+    public void keyPressed(KeyEvent e) {
+        pressedKeys.add(e.getKeyCode());
+    }
+
+
+    public void keyReleased(KeyEvent e) {
+        pressedKeys.remove(e.getKeyCode());
+    }
+
+
+    public void mousePressed(MouseEvent e) {
+        mouseClicked = true;
+    }
+
+
+    public void mouseReleased(MouseEvent e) {
+        mouseClicked = false;
+    }
+
+
+    public void mouseMoved(MouseEvent e) {
+        mousePosition = e.getPoint();
+    }
+    public static boolean isKeyPressed(int keyCode) {
+        return pressedKeys.contains(keyCode);
+    }
+
+    public static Point getMousePosition() {
+        return mousePosition;
+    }
+
+    public static boolean isMouseClicked() {
+        return mouseClicked;
     }
 
 

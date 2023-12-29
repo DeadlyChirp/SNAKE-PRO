@@ -3,26 +3,26 @@
 public class Prey {
     double x, y;
     int dir; // direction
-    double currentAngle, angularVelocity; // angle and angular velocity
+    double wantedAngle, actualAngle; // l'angle ou le serpent veut aller et l'angle actuel
     double speed;
     private final double size;
     private final long spawnTime;
-    private final SlitherCanvas canvas;
+
 
 
     //Prey represente une entite de proie dans le jeu
     //comme food mais avec des deplacements
     //qui peut agrandir et se deplacer
 
-    Prey(double x, double y, double size, int dir, double currentAngle, double angularVelocity, double speed, SlitherCanvas canvas) {
+    Prey(double x, double y, double size, int dir, double wantedAngle, double actualAngle, double speed) {
         this.x = x;
         this.y = y;
         this.size = size;
         this.dir = dir;
-        this.currentAngle = currentAngle;
-        this.angularVelocity = angularVelocity;
+        this.wantedAngle = wantedAngle; //indique la direction actuelle du serpent dans 1 espace 2D.
+        this.actualAngle= actualAngle; //indique l'angle actuel du serpent
         this.speed = speed;
-        this.canvas = canvas;
+
         this.spawnTime = System.currentTimeMillis();
     }
 
@@ -41,18 +41,17 @@ public class Prey {
         // logique de deplacement au hasard de la proie
         // Exemple : la proie se deplace dans une direction aleatoire
         if (Math.random() < 0.1) { // change la direction 10% du temps
-            angularVelocity = Math.random() * 2 * Math.PI; // nouvelle direction aleatoire
+            actualAngle = Math.random() * 2 * Math.PI; // nouvelle direction aleatoire
         }
 
         // mettre a jour la position de la proie basee sur la direction et la vitesse
-        x += Math.cos(angularVelocity) * speed;
-        y += Math.sin(angularVelocity) * speed;
+        x += Math.cos(actualAngle) * speed;
+        y += Math.sin(actualAngle) * speed;
         // garder la proie dans les limites de l'ecran
         // ajouter ici
         if (x < 0) x = 0; // Replace 0 with minimum x boundary
         if (y < 0) y = 0; // Replace 0 with minimum y boundary
-        if (x > canvas.getScreenWidth()) x = canvas.getScreenWidth(); // Corrected
-        if (y > canvas.getScreenHeight()) y = canvas.getScreenHeight(); // Replace screenHeight with actual screen height
+
     }
 
     // methode pour verifier si la proie a ete mangee par un serpent

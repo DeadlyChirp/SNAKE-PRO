@@ -24,11 +24,12 @@ public class Snake {
     int dir; // direction
     double wantedAngle, actualAngle; // l'angle ou le serpent veut aller et l'angle actuel
     double speed, targetspeed; // speed and target speed
+
     private double foodAmount; // food eaten
     final Deque<SnakeBody> body; // body parts
     private final SlitherModel gamemodel; // model
 
-    Snake(int id, String name, double x, double y, double wantedAngle, double actualAngle, double speed, double foodAmount, Deque<SnakeBody> body, SlitherModel gamemodel) {
+    Snake(int id, String name, double x, double y, double wantedAngle, double actualAngle, double speed, double foodAmount, Deque<SnakeBody> body, SlitherModel gamemodel)  {
         this.id = id;
         this.name = name;
         this.x = x;
@@ -41,6 +42,7 @@ public class Snake {
         this.foodAmount = foodAmount; //quantite de nourriture mangee. Utiliser pour calculer la croissance du serpent
         this.body = body; //represente differentes parties du corps du serpent, chaque segment est un element de la deque
         this.gamemodel = gamemodel;
+
     }
 
     private double getSnakeBody  (){ //sert a calculer la taille du serpent

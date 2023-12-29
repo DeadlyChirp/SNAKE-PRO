@@ -168,9 +168,9 @@ class SlitherModel {
         }
     }
 
-    void addSnake(int snakeID, String name, double x, double y, double wang, double ang, double sp, double fam, Deque<SnakeBody> body) {
+    void addSnake(int snakeID, String name, double x, double y, double wantedAngle, double actualangle, double speed, double foodAmount, Deque<SnakeBody> body) {
         synchronized (view.modelLock) {
-            Snake newSnake = new Snake(snakeID, name, x, y, wang, ang, sp, fam, body, this);
+            Snake newSnake = new Snake(snakeID, name, x, y, wantedAngle, actualangle, speed, foodAmount, body, this);
             if (snake == null) {
                 snake = newSnake;
             }
@@ -230,4 +230,37 @@ class SlitherModel {
             });
         }
     }
+
+    public void updatePlayerPosition(Player player, Double angle, Boolean boost) {
+        // on assume que le joueur est un serpent
+        if (this.snake != null) {
+            this.snake.actualAngle = angle;
+
+            // Si boost, alors la vitesse est plus grande sinon la vitesse est normale
+
+            double boostSpeed = 1.5; // Exemple valeur pour la vitesse boost
+            double normalSpeed = 1.0; // Exemple valeur pour la vitesse normale
+
+            this.snake.targetspeed = boost ? boostSpeed : normalSpeed;
+
+            // mise a jour de la vitesse
+            if (this.snake.speed < this.snake.targetspeed) {
+                this.snake.speed += (this.snake.targetspeed - this.snake.speed) * 0.1; // Augmenter la vitesse
+            } else if (this.snake.speed > this.snake.targetspeed) {
+                this.snake.speed -= (this.snake.speed - this.snake.targetspeed) * 0.1; // Ralentir la vitesse
+            }
+
+
+        }
+    }
+
+
+    public int getX() {
+        return this.snake != null ? (int) this.snake.x : 0;
+    }
+
+    public int getY() {
+        return this.snake != null ? (int) this.snake.y : 0;
+    }
+
 }

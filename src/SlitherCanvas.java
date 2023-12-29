@@ -5,7 +5,6 @@ import java.awt.geom.Path2D;
 import java.awt.geom.Rectangle2D;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 import javax.swing.*;
 
 
@@ -46,6 +45,7 @@ public class SlitherCanvas extends JPanel { // JPanel est une classe de Swing
     final ScheduledExecutorService repaintThread;
 
     // Constructor
+    // Constructor
     SlitherCanvas(SlitherJFrame view) {
         super();
         this.view = view;
@@ -54,10 +54,16 @@ public class SlitherCanvas extends JPanel { // JPanel est une classe de Swing
 
         GraphicsEnvironment localGraphicsEnvironment = GraphicsEnvironment.getLocalGraphicsEnvironment();
         int refreshRate = localGraphicsEnvironment.getDefaultScreenDevice().getDisplayMode().getRefreshRate();
-        long repaintDelay = 1000000000 / (refreshRate != DisplayMode.REFRESH_RATE_UNKNOWN ? refreshRate : 60);
+
+        // Calculate the repaint delay in milliseconds directly
+        long repaintDelayMillis = (refreshRate != DisplayMode.REFRESH_RATE_UNKNOWN) ? 1000 / refreshRate : 17; // Approx. 60 FPS if unknown
+
         repaintThread = Executors.newSingleThreadScheduledExecutor();
-        repaintThread.scheduleAtFixedRate(this::repaint, 1, repaintDelay, TimeUnit.NANOSECONDS);
+
+        // Schedule the repaint using milliseconds directly
+        repaintThread.scheduleAtFixedRate(this::repaint, 1, repaintDelayMillis, java.util.concurrent.TimeUnit.MILLISECONDS);
     }
+
 
 
 

@@ -110,6 +110,18 @@ public class SlitherCanvas extends JPanel { // JPanel est une classe de Swing
             if (model == null) {
                 break modelPaintBlock;
             }
+            if (model.snake != null) {
+                int playerX = model.getX();
+                int playerY = model.getY();
+                // Map these coordinates to the minimap
+                // Assuming the minimap size is 80x80 and located at the bottom right
+                double minimapScale = 80.0 / (model.worldBoundaryRadius * 2);
+                int minimapX = (int)(playerX * minimapScale) + w - 80;
+                int minimapY = (int)(playerY * minimapScale) + h - 80;
+
+                g.setColor(Color.RED); // Player position color
+                g.fillOval(minimapX, minimapY, 5, 5); // Adjust size as needed
+            }
 
             AffineTransform oldTransform = g.getTransform();
             double scale;

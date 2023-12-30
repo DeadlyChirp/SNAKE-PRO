@@ -27,6 +27,27 @@ class SlitherModel {
 
     Snake snake;
 
+
+    //test test values
+    private static final int DEFAULT_WORLD_BOUNDARY_RADIUS = 1000;
+    private static final int DEFAULT_WORLD_SECTOR_SIZE = 50;
+    private static final double DEFAULT_SPEED_ANGLE_DIV = 1.0;
+    private static final double DEFAULT_SPEED_CALC_BASE = 1.0;
+    private static final double DEFAULT_SPEED_CAL_FACTOR = 1.0;
+    private static final double DEFAULT_SNAKE_CAL_MODIFIER = 1.0;
+    private static final double DEFAULT_ANGULAR_VELOCITY_FACTOR = 1.0;
+    private static final double DEFAULT_PREY_ANGULAR_VELOCITY_FACTOR = 1.0;
+    private static final double DEFAULT_CST = 1.0;
+    private static final int DEFAULT_MAX_SIZE_FOR_SPEED_CALCULATION = 100;
+
+
+    SlitherModel() {
+        this(DEFAULT_WORLD_BOUNDARY_RADIUS, DEFAULT_WORLD_SECTOR_SIZE, DEFAULT_SPEED_ANGLE_DIV,
+                DEFAULT_SPEED_CALC_BASE, DEFAULT_SPEED_CAL_FACTOR, DEFAULT_SNAKE_CAL_MODIFIER,
+                DEFAULT_ANGULAR_VELOCITY_FACTOR, DEFAULT_PREY_ANGULAR_VELOCITY_FACTOR,
+                DEFAULT_CST, DEFAULT_MAX_SIZE_FOR_SPEED_CALCULATION, null);
+    }
+
     SlitherModel(int worldBoundaryRadius, int worldsectorSize, double spangdv, double nsp1, double speedCalFactor, double snakeCalModifier, double angularVelocityFactor, double preyAngularVelocityFactor, double cst, int maxSizeForSpeedCalculation, SlitherJFrame view) {
         this.worldBoundaryRadius = worldBoundaryRadius;
         this.worldsectorSize = worldsectorSize;
@@ -262,5 +283,6 @@ class SlitherModel {
     public int getY() {
         return this.snake != null ? (int) this.snake.y : 0;
     }
+
 
 }

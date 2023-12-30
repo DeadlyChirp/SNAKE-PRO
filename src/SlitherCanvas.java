@@ -6,6 +6,9 @@ import java.awt.geom.Rectangle2D;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import javax.swing.*;
+import java.util.Timer;
+import java.util.TimerTask;
+
 
 
 // Graphique du jeu
@@ -42,7 +45,8 @@ public class SlitherCanvas extends JPanel { // JPanel est une classe de Swing
     private int zoom = 12;
     private long lastFrameTime;
     private double fps;
-    final ScheduledExecutorService repaintThread;
+    private final Timer repaintTimer;
+
 
     // Constructor
     // Constructor
@@ -58,13 +62,21 @@ public class SlitherCanvas extends JPanel { // JPanel est une classe de Swing
         // Calculate the repaint delay in milliseconds directly
         long repaintDelayMillis = (refreshRate != DisplayMode.REFRESH_RATE_UNKNOWN) ? 1000 / refreshRate : 17; // Approx. 60 FPS if unknown
 
-        repaintThread = Executors.newSingleThreadScheduledExecutor();
-
-        // Schedule the repaint using milliseconds directly
-        repaintThread.scheduleAtFixedRate(this::repaint, 1, repaintDelayMillis, java.util.concurrent.TimeUnit.MILLISECONDS);
+        // Initialize and schedule a TimerTask for repainting
+        repaintTimer = new Timer("Repaint Timer", true); // 'true' makes this timer daemon
+        repaintTimer.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                repaint();
+            }
+        }, 0, repaintDelayMillis);
     }
 
-
+    public void stopRepaintTimer() {
+        if (repaintTimer != null) {
+            repaintTimer.cancel();
+        }
+    }
 
 
     public double getScreenWidth() {

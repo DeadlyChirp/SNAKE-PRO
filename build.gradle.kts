@@ -1,8 +1,9 @@
 plugins {
     id("java")
+    id("application")
 }
 
-group = "org.example"
+group = "tangNdam"
 version = "1.0-SNAPSHOT"
 
 repositories {
@@ -13,6 +14,13 @@ dependencies {
     // Your other dependencies here
     testImplementation(platform("org.junit:junit-bom:5.9.1"))
     testImplementation("org.junit.jupiter:junit-jupiter")
+    testImplementation("org.junit.jupiter:junit-jupiter-api")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
+}
+
+application {
+    // Correctly specify the main class with the package name
+    mainClass.set("tangNdam.slither.Main")
 }
 
 tasks.test {

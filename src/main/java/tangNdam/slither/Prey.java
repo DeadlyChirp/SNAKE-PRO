@@ -1,5 +1,7 @@
+package tangNdam.slither;
+
 // entite de proie dans le jeu
-// similaire à la classe Food mais peut se deplacer
+// similaire à la classe mainTest.Food mais peut se deplacer
 public class Prey {
     double x, y;
     int dir; // direction
@@ -10,7 +12,7 @@ public class Prey {
 
 
 
-    //Prey represente une entite de proie dans le jeu
+    //mainTest.Prey represente une entite de proie dans le jeu
     //comme food mais avec des deplacements
     //qui peut agrandir et se deplacer
 
@@ -59,7 +61,7 @@ public class Prey {
         double snakeHeadX = snake.x; // Assume snake has x and y properties for its head
         double snakeHeadY = snake.y;
         double distance = Math.sqrt(Math.pow(snakeHeadX - x, 2) + Math.pow(snakeHeadY - y, 2));
-        return distance < (getRadius() + snake.getHeadRadius()); // Assuming Snake has a method to get head radius
+        return distance < (getRadius() + snake.getHeadRadius()); // Assuming mainTest.Snake has a method to get head radius
     }
 
 

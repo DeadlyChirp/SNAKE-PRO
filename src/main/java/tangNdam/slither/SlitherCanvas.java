@@ -1,10 +1,10 @@
+package tangNdam.slither;
+
 import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Path2D;
 import java.awt.geom.Rectangle2D;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
 import javax.swing.*;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -119,7 +119,7 @@ public class SlitherCanvas extends JPanel { // JPanel est une classe de Swing
                 int minimapX = (int)(playerX * minimapScale) + w - 80;
                 int minimapY = (int)(playerY * minimapScale) + h - 80;
 
-                g.setColor(Color.RED); // Player position color
+                g.setColor(Color.RED); // mainTest.Player position color
                 g.fillOval(minimapX, minimapY, 5, 5); // Adjust size as needed
             }
 

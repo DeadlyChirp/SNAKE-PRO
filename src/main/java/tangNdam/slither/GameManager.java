@@ -1,3 +1,5 @@
+package tangNdam.slither;
+
 import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
@@ -21,8 +23,8 @@ public class GameManager {
 
     public void initializePlayers() {
         // Initialize players with their control schemes
-        Player player1 = new Player.PlayerKeyboard("Player 1");
-        Player player2 = new Player.PlayerMouse("Player 2");
+        Player player1 = new Player.PlayerKeyboard("mainTest.Player 1");
+        Player player2 = new Player.PlayerMouse("mainTest.Player 2");
 
         addPlayer(player1);
         addPlayer(player2);
@@ -30,7 +32,7 @@ public class GameManager {
 
     public void updateGame() {
         for (Player player : players) {
-            player.update(gameModel); // This calls update on Player, handling both keyboard and mouse
+            player.update(gameModel); // This calls update on mainTest.Player, handling both keyboard and mouse
         }
         // ... other game logic
     }
@@ -99,5 +101,5 @@ public class GameManager {
     }
 }
 
-// Modify Player classes if necessary to adapt them to the GameManager's static methods
-// Ensure the Player.Keyboard and Player.Mouse classes are correctly using the GameManager's static methods
+// Modify mainTest.Player classes if necessary to adapt them to the mainTest.GameManager's static methods
+// Ensure the mainTest.Player.Keyboard and mainTest.Player.Mouse classes are correctly using the mainTest.GameManager's static methods

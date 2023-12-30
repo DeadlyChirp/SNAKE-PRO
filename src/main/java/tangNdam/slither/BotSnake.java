@@ -1,3 +1,5 @@
+package tangNdam.slither;
+
 import java.util.Deque;
 
 public class BotSnake extends Snake {
@@ -6,7 +8,7 @@ public class BotSnake extends Snake {
         super(id, name, x, y, wang, ang, sp, fam, body, model);
     }
 
-    // Mettez ici la logique pour contrôler le mouvement du BotSnake
+    // Mettez ici la logique pour contrôler le mouvement du mainTest.BotSnake
     public void move() {
         // Logique de déplacement du bot
     }

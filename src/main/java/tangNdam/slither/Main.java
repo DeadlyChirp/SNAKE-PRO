@@ -1,4 +1,4 @@
-// Config l'environnement du jeu,
+package tangNdam.slither;// Config l'environnement du jeu,
 //apparance de la fenêtre, taille, titre, etc.
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;

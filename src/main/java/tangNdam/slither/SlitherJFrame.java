@@ -1,20 +1,13 @@
+package tangNdam.slither;
+
 import javax.swing.*;
 
 import java.awt.*;
-import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.ArrayDeque;
 import java.util.Timer;
 import java.util.TimerTask;
-import javax.swing.*;
-import javax.swing.event.AncestorEvent;
-import javax.swing.event.AncestorListener;
-import javax.swing.table.DefaultTableCellRenderer;
-
-import static javax.swing.WindowConstants.DISPOSE_ON_CLOSE;
 
 //Représente la fenêtre principale du jeu, y compris la mise en page,
 // les paramètres, le canevas et les fonctionnalités de connexion.
@@ -26,7 +19,7 @@ public class SlitherJFrame extends JFrame {
 //    addWindowListener(new WindowAdapter() {
 //        @Override
 //        public void windowClosing(WindowEvent e) {
-//            // Call the cleanup method on SlitherCanvas
+//            // Call the cleanup method on mainTest.SlitherCanvas
 //            canvas.stopRepaintTimer();
 //            // ... [other cleanup actions]
 //        }
@@ -111,13 +104,13 @@ private static final String[] SNAKES = {
 
     private Timer gameUpdateTimer;
 
-//    SlitherJFrame() {
+//    mainTest.SlitherJFrame() {
 //        super("MySlither");
 //        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 //
 //        getContentPane().setLayout(new BorderLayout());
 //
-//        canvas = new SlitherCanvas(this);
+//        canvas = new mainTest.SlitherCanvas(this);
 //
 //        // === upper row ===
 //        JPanel settings = new JPanel(new GridBagLayout());
@@ -175,7 +168,7 @@ private static final String[] SNAKES = {
 //        setExtendedState(MAXIMIZED_BOTH);
 //
 //        validate();
-//        model = new SlitherModel(1000, 50, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 100, this);
+//        model = new mainTest.SlitherModel(1000, 50, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 100, this);
 //    }
 
     SlitherJFrame() {
@@ -241,7 +234,7 @@ private static final String[] SNAKES = {
         int screenHeight = Toolkit.getDefaultToolkit().getScreenSize().height;
         setSize(screenWidth * 3 / 4, screenHeight * 4 / 5);
         setLocationRelativeTo(null);
-        setExtendedState(MAXIMIZED_BOTH);
+        setExtendedState(Frame.MAXIMIZED_BOTH);
 
         // Initialize model and start game loop
         model = new SlitherModel(1000, 50, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 100, this);

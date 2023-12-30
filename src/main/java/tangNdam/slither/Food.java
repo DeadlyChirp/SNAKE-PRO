@@ -1,4 +1,4 @@
-//Gère les entités alimentaires avec des attributs
+package tangNdam.slither;//Gère les entités alimentaires avec des attributs
 // comme la position, la taille,
 // le temps d'apparition et
 // les mécaniques de croissance.

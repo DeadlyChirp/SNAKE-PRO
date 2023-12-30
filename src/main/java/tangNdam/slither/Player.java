@@ -1,3 +1,5 @@
+package tangNdam.slither;
+
 import java.awt.*;
 import java.awt.event.KeyEvent;
 
@@ -14,7 +16,7 @@ abstract class Player {
     }
 
     public void update(SlitherModel model) {
-        // Update angle and boost based on the GameManager's input
+        // Update angle and boost based on the mainTest.GameManager's input
         if (this instanceof PlayerKeyboard) {
             if (GameManager.isKeyPressed(KeyEvent.VK_W)) {
                 boost = true;
@@ -43,14 +45,14 @@ abstract class Player {
         model.updatePlayerPosition(this, angle, boost);
     }
 
-    // PlayerMouse doesn't need to override the action method because it uses the GameManager's mouse state directly
+    // PlayerMouse doesn't need to override the action method because it uses the mainTest.GameManager's mouse state directly
     private Double calculateAngleToMouse(SlitherModel model, Point mousePosition) {
         double dx = mousePosition.x - model.getX();
         double dy = mousePosition.y - model.getY();
         return Math.atan2(dy, dx);
     }
 
-    // PlayerKeyboard class uses the GameManager's keyboard state directly
+    // PlayerKeyboard class uses the mainTest.GameManager's keyboard state directly
     static class PlayerKeyboard extends Player {
         PlayerKeyboard(String name) {
             super(name);

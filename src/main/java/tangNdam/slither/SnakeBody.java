@@ -1,4 +1,4 @@
-//Represente une partie du cors, principalement pour le rendu et
+package tangNdam.slither;//Represente une partie du cors, principalement pour le rendu et
 // la gestion de la collision.
 
 class SnakeBody {

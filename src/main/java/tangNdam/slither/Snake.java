@@ -1,3 +1,5 @@
+package tangNdam.slither;
+
 import java.util.Deque;
 
 //Ici Deque est une interface qui
@@ -14,7 +16,7 @@ import java.util.Deque;
 //C'est pour maintenir la taille constante du serpent.
 //Ca nous aide a creer une illusion de mouvement fluide. Ca glisse
 
-//Entite Snake,
+//Entite mainTest.Snake,
 // avec des propriétés comme la position, la taille, la direction, la vitesse, etc.
 //une deque de partie du corps.
 public class Snake {

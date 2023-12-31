@@ -18,8 +18,8 @@ import javax.swing.Timer;
 
 public class Board extends JPanel implements ActionListener {
 
-    private final int B_WIDTH = 300;
-    private final int B_HEIGHT = 300;
+    private final int B_WIDTH = 500;
+    private final int B_HEIGHT = 500;
     private final int DOT_SIZE = 10;
     private final int ALL_DOTS = 900;
     private final int RAND_POS = 29;
@@ -43,6 +43,9 @@ public class Board extends JPanel implements ActionListener {
     private Image apple;
     private Image head;
 
+
+    private int score = 0;
+
     public Board() {
 
         initBoard();
@@ -61,13 +64,13 @@ public class Board extends JPanel implements ActionListener {
 
     private void loadImages() {
 
-        ImageIcon iid = new ImageIcon("src/resources/dot.png");
+        ImageIcon iid = new ImageIcon("src/main/java/resources/dot.png");
         ball = iid.getImage();
 
-        ImageIcon iia = new ImageIcon("src/resources/apple.png");
+        ImageIcon iia = new ImageIcon("src/main/java/resources/apple.png");
         apple = iia.getImage();
 
-        ImageIcon iih = new ImageIcon("src/resources/head.png");
+        ImageIcon iih = new ImageIcon("src/main/java/resources/headsnek.png");
         head = iih.getImage();
     }
 
@@ -84,6 +87,7 @@ public class Board extends JPanel implements ActionListener {
 
         timer = new Timer(DELAY, this);
         timer.start();
+        updateScore();
     }
 
     @Override
@@ -113,7 +117,26 @@ public class Board extends JPanel implements ActionListener {
 
             gameOver(g);
         }
+        if (inGame) {
+            drawScore(g);
+        } else {
+            gameOver(g);
+        }
     }
+
+    private void drawScore(Graphics g) {
+        String msg = "Score: " + score;
+        Font font = new Font("Serif", Font.ITALIC, 12);
+        FontMetrics metrics = getFontMetrics(font);
+
+        int x = (B_WIDTH - metrics.stringWidth(msg)) - DOT_SIZE;
+        int y = DOT_SIZE;
+
+        g.setColor(Color.white);
+        g.setFont(font);
+        g.drawString(msg, x, y);
+    }
+
 
     private void gameOver(Graphics g) {
 
@@ -124,6 +147,7 @@ public class Board extends JPanel implements ActionListener {
         g.setColor(Color.white);
         g.setFont(small);
         g.drawString(msg, (B_WIDTH - metr.stringWidth(msg)) / 2, B_HEIGHT / 2);
+        drawScore(g);
     }
 
     private void checkApple() {
@@ -133,6 +157,10 @@ public class Board extends JPanel implements ActionListener {
             dots++;
             locateApple();
         }
+        updateScore();
+    }
+    private void updateScore() {
+        score = (dots - 3) * 1;
     }
 
     private void move() {

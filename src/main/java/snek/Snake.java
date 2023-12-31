@@ -2,7 +2,7 @@ package snek;
 
 
 
-import snek.Board;
+
 
 import javax.swing.JFrame;
 
@@ -25,3 +25,4 @@ public class Snake extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
 }
+

@@ -47,26 +47,26 @@ public class Snake {
 
     }
 
-    private double getSnakeBody  (){ //sert a calculer la taille du serpent
+    private double getScale  (){ //sert a calculer la taille du serpent
         return Math.min(6, 1 + (body.size() - 2) / 106.0);
     }
-    double getSnkAngle() { //sert a calculer l'angle du serpent
-        return 0.13 + 0.87 * Math.pow((7 - getSnakeBody()) / 6, 2);
+    double getTurnRadiusFactor() { //sert a calculer l'angle du serpent
+        return 0.13 + 0.87 * Math.pow((7 - getScale()) / 6, 2);
     }
 
-    double getSnkspeed() { //sert a calculer la vitesse du serpent
+    double getSpeedTurnFactor() { //sert a calculer la vitesse de rotation du serpent
 
         return Math.min(speed / gamemodel.speedAnglediv, 1);
     }
 
-    private double getFinalspeed() {  //sert a calculer la vitesse finale du serpent
+    private double getBasespeed() {  //sert a calculer la vitesse finale du serpent
 
-        return gamemodel.speedCalculBase + gamemodel.speedCalFactor * getSnakeBody();
+        return gamemodel.speedCalculBase + gamemodel.speedCalFactor * getScale();
     }
 
     boolean isBoosting() { //sert a calculer si le serpent accelere ou pas
 
-        return targetspeed > getFinalspeed();
+        return targetspeed > getBasespeed();
     }
 
     double getFood() { //sert a calculer la quantite de nourriture mangee
@@ -80,6 +80,17 @@ public class Snake {
     }
 
     public double getHeadRadius() {
-        return 6.0 + 4.0 * getSnakeBody(); // 6.0 est la taille de la tete du serpent et 4.0 est la taille de chaque partie du corps
+        return 6.0 + 4.0 * getScale(); // 6.0 est la taille de la tete du serpent et 4.0 est la taille de chaque partie du corps
+    }
+
+    public void setDirection(Double wantedAngle) {
+        if (wantedAngle != null) {
+            this.wantedAngle = wantedAngle % (2 * Math.PI);
+
+        }
+    }
+
+    public void setBoosting(boolean boost) {
+        this.targetspeed =boost ? getBasespeed() * 2 : getBasespeed();
     }
 }

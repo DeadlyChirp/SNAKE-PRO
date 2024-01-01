@@ -1,5 +1,6 @@
 package tangNdam.slither;
 
+import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -30,24 +31,26 @@ class SlitherModel {
 
 
     //test test values
-    private static final int DEFAULT_WORLD_BOUNDARY_RADIUS = 1000;
-    private static final int DEFAULT_WORLD_SECTOR_SIZE = 50;
-    private static final double DEFAULT_SPEED_ANGLE_DIV = 1.0;
-    private static final double DEFAULT_SPEED_CALC_BASE = 1.0;
-    private static final double DEFAULT_SPEED_CAL_FACTOR = 1.0;
-    private static final double DEFAULT_SNAKE_CAL_MODIFIER = 1.0;
-    private static final double DEFAULT_ANGULAR_VELOCITY_FACTOR = 1.0;
-    private static final double DEFAULT_PREY_ANGULAR_VELOCITY_FACTOR = 1.0;
-    private static final double DEFAULT_CST = 1.0;
-    private static final int DEFAULT_MAX_SIZE_FOR_SPEED_CALCULATION = 100;
+    public static final int DEFAULT_WORLD_BOUNDARY_RADIUS = 1000;
+    public static final int DEFAULT_WORLD_SECTOR_SIZE = 50;
+    public  static final double DEFAULT_SPEED_ANGLE_DIV = 1.0;
+    static final double DEFAULT_SPEED_CALC_BASE = 1.0;
+    public  static final double DEFAULT_SPEED_CAL_FACTOR = 1.0;
+    public static final double DEFAULT_SNAKE_CAL_MODIFIER = 1.0;
+    public static final double DEFAULT_ANGULAR_VELOCITY_FACTOR = 1.0;
+    public  static final double DEFAULT_PREY_ANGULAR_VELOCITY_FACTOR = 1.0;
+    public  static final double DEFAULT_CST = 1.0;
+    public static final int DEFAULT_MAX_SIZE_FOR_SPEED_CALCULATION = 100;
 
 
-    SlitherModel() {
-        this(DEFAULT_WORLD_BOUNDARY_RADIUS, DEFAULT_WORLD_SECTOR_SIZE, DEFAULT_SPEED_ANGLE_DIV,
-                DEFAULT_SPEED_CALC_BASE, DEFAULT_SPEED_CAL_FACTOR, DEFAULT_SNAKE_CAL_MODIFIER,
-                DEFAULT_ANGULAR_VELOCITY_FACTOR, DEFAULT_PREY_ANGULAR_VELOCITY_FACTOR,
-                DEFAULT_CST, DEFAULT_MAX_SIZE_FOR_SPEED_CALCULATION, null);
+    public SlitherModel(SlitherJFrame view) {
+        this(DEFAULT_WORLD_BOUNDARY_RADIUS, DEFAULT_WORLD_SECTOR_SIZE,
+                DEFAULT_SPEED_ANGLE_DIV, DEFAULT_SPEED_CALC_BASE, DEFAULT_SPEED_CAL_FACTOR,
+                DEFAULT_SNAKE_CAL_MODIFIER, DEFAULT_ANGULAR_VELOCITY_FACTOR,
+                DEFAULT_PREY_ANGULAR_VELOCITY_FACTOR, DEFAULT_CST,
+                DEFAULT_MAX_SIZE_FOR_SPEED_CALCULATION, view);
     }
+
 
     SlitherModel(int worldBoundaryRadius, int worldsectorSize, double spangdv, double nsp1, double speedCalFactor, double snakeCalModifier, double angularVelocityFactor, double preyAngularVelocityFactor, double cst, int maxSizeForSpeedCalculation, SlitherJFrame view) {
         this.worldBoundaryRadius = worldBoundaryRadius;
@@ -80,7 +83,8 @@ class SlitherModel {
     }
 
     void update() {
-        synchronized (view.modelLock) {
+        try {
+        synchronized (view != null ? view.modelLock : new Object()){
             long newTime = System.currentTimeMillis();
 
             double deltaTimeWIP = (newTime - lastUpdateTime) / 8.0;
@@ -89,12 +93,12 @@ class SlitherModel {
 
             activesnakes.values().forEach(cSnake -> {
 
-                double snakeDeltaAngle = angularVelocityFactor * deltaTime * cSnake.getSnkAngle() * cSnake.getSnkspeed();
+                double snakeDeltaAngle = angularVelocityFactor * deltaTime * cSnake.getTurnRadiusFactor() * cSnake.getSpeedTurnFactor();
                 double snakeDistance = cSnake.speed * deltaTime / 4.0;
                 if (snakeDistance > 42) {
                     snakeDistance = 42;
                 }
-
+//                System.out.println("Snake updated");
                 if (cSnake.targetspeed != cSnake.speed) {
                     if (cSnake.targetspeed < cSnake.speed) {
                         cSnake.targetspeed += 0.3;
@@ -188,10 +192,14 @@ class SlitherModel {
 
             lastUpdateTime = newTime;
         }
+
+    } catch (Exception e) {
+        e.printStackTrace(); // This will print any exceptions to the console
+    }
     }
 
     void addSnake(int snakeID, String name, double x, double y, double wantedAngle, double actualangle, double speed, double foodAmount, Deque<SnakeBody> body) {
-        synchronized (view.modelLock) {
+        synchronized (view != null ? view.modelLock : new Object()) {
             Snake newSnake = new Snake(snakeID, name, x, y, wantedAngle, actualangle, speed, foodAmount, body, this);
             if (snake == null) {
                 snake = newSnake;
@@ -205,13 +213,13 @@ class SlitherModel {
     }
 
     void removeSnake(int snakeID) {
-        synchronized (view.modelLock) {
+        synchronized (view != null ? view.modelLock : new Object()) {
             activesnakes.remove(snakeID);
         }
     }
 
     void addPrey(int id, double x, double y, double radius, int dir, double wang, double ang, double sp) {
-        synchronized (view.modelLock) {
+        synchronized (view != null ? view.modelLock : new Object()) {
             activepreys.put(id, new Prey(x, y, radius, dir, wang, ang, sp));
         }
     }
@@ -221,31 +229,31 @@ class SlitherModel {
     }
 
     void removePrey(int id) {
-        synchronized (view.modelLock) {
+        synchronized (view != null ? view.modelLock : new Object()) {
             activepreys.remove(id);
         }
     }
 
     void addFood(int x, int y, double size, boolean fastSpawn) {
-        synchronized (view.modelLock) {
+        synchronized (view != null ? view.modelLock : new Object()) {
             activefoods.put(y * worldBoundaryRadius * 3 + x, new Food(x, y, size, fastSpawn));
         }
     }
 
     void removeFood(int x, int y) {
-        synchronized (view.modelLock) {
+        synchronized (view != null ? view.modelLock : new Object()) {
             activefoods.remove(y * worldBoundaryRadius * 3 + x);
         }
     }
 
     void addSector(int x, int y) {
-        synchronized (view.modelLock) {
+        synchronized (view != null ? view.modelLock : new Object()) {
             sectors[y][x] = true;
         }
     }
 
     void removeSector(int x, int y) {
-        synchronized (view.modelLock) {
+        synchronized (view != null ? view.modelLock : new Object()) {
             sectors[y][x] = false;
             activefoods.values().removeIf(f -> {
                 return f.x / worldsectorSize == x && f.y / worldsectorSize == y;
@@ -285,5 +293,27 @@ class SlitherModel {
         return this.snake != null ? (int) this.snake.y : 0;
     }
 
+    public void initializeGameState() {
+        // Set up the initial state of the game, like adding snakes, food, and prey
+        Deque<SnakeBody> snakeBodyQueue = new ArrayDeque<SnakeBody>();
+// populate snakeBodyQueue with SnakeBody objects as needed
+        addSnake(1, "Player", 500, 500, 0, 0, 4.0, 0, snakeBodyQueue);
+        System.out.println("Snake initialized");
+        // Add initial food
+        for (int i = 0; i < 100; i++) { // for example, add 100 food items
+            addFood((int) (Math.random() * 1000), (int) (Math.random() * 1000), 1, false); // Random position and size 1
+        }
 
+        // Add initial prey
+        for (int i = 0; i < 10; i++) { // for example, add 10 prey
+            addPrey(i, (int) (Math.random() * 1000), (int) (Math.random() * 1000), 5, 1, Math.random() * 2 * Math.PI, Math.random() * 2 * Math.PI, 3); // Random position, direction and speed
+        }
+
+        // Setup the initial sectors
+        for (int i = 0; i < sectors.length; i++) {
+            for (int j = 0; j < sectors[i].length; j++) {
+                addSector(i, j); // Activate all sectors for simplicity
+            }
+        }
+    }
 }

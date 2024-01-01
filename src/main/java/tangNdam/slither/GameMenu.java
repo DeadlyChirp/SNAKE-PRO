@@ -1,4 +1,4 @@
-package tangNgdam.slither; // Use the base package of slither.io project
+package tangNdam.slither; // Use the base package of slither.io project
 
 import snek.resources.snek.Snake;
 
@@ -38,7 +38,8 @@ public class GameMenu extends JFrame {
     }
 
     private void startSlitherGame() {
-        // Code to start slither.io
-        // This will depend on how slither.io is started in your project
+        SlitherJFrame slitherGame = new SlitherJFrame();
+        slitherGame.setVisible(true);
+        this.dispose(); // Close the menu
     }
 }

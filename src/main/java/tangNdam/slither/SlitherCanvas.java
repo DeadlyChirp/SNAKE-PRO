@@ -1,6 +1,10 @@
 package tangNdam.slither;
 
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionAdapter;
+import java.awt.event.MouseMotionListener;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Path2D;
@@ -8,6 +12,7 @@ import java.awt.geom.Rectangle2D;
 import javax.swing.*;
 import java.util.Timer;
 import java.util.TimerTask;
+
 
 
 
@@ -36,62 +41,106 @@ public class SlitherCanvas extends JPanel { // JPanel est une classe de Swing
     private static final Font DEBUG_FONT = Font.decode("SansSerif-PLAIN-12");
 
 
-    int screenWidth;
-    private int screenHeight;
 
+    private MouseInput mouseInput;
+    private int zoom = 12;
 
     private boolean[] map;
     private final SlitherJFrame view;
-    private int zoom = 12;
     private long lastFrameTime;
     private double fps;
     private final Timer repaintTimer;
+    private SlitherModel model;
 
 
     // Constructor
     // Constructor
-    SlitherCanvas(SlitherJFrame view) {
+    public SlitherCanvas(SlitherJFrame view) {
         super();
         this.view = view;
         setBackground(BACKGROUND_COLOR);
         setForeground(FOREGROUND_COLOR);
 
-        GraphicsEnvironment localGraphicsEnvironment = GraphicsEnvironment.getLocalGraphicsEnvironment();
-        int refreshRate = localGraphicsEnvironment.getDefaultScreenDevice().getDisplayMode().getRefreshRate();
+        // Initialize mouse controls
+        initMouseControls();
 
-        // Calculate the repaint delay in milliseconds directly
-        long repaintDelayMillis = (refreshRate != DisplayMode.REFRESH_RATE_UNKNOWN) ? 1000 / refreshRate : 17; // Approx. 60 FPS if unknown
-
-        // Initialize and schedule a TimerTask for repainting
-        repaintTimer = new Timer("Repaint Timer", true); // 'true' makes this timer daemon
+        // Scheduled repaint using Timer
+        repaintTimer = new Timer("Repaint Timer", true);
         repaintTimer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
                 repaint();
             }
-        }, 0, repaintDelayMillis);
+        }, 0, 17); // Approximately 60 FPS
     }
 
     public void stopRepaintTimer() {
-        if (repaintTimer != null) {
-            repaintTimer.cancel();
+        repaintTimer.cancel();
+    }
+
+    private void initMouseControls() {
+        mouseInput = new MouseInput();
+        addMouseWheelListener(e -> {
+            zoom -= e.getWheelRotation();
+            zoom = Math.max(zoom, 0);
+            zoom = Math.min(zoom, 18);
+        });
+
+        addMouseMotionListener(new MouseMotionAdapter() {
+            @Override
+            public void mouseMoved(MouseEvent e) {
+                mouseInput.readWang(e);
+            }
+        });
+
+        addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                mouseInput.boost = true;
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                mouseInput.boost = false;
+            }
+        });
+    }
+    private class MouseInput {
+        Double wang; // The desired angle of the snake's head
+        boolean boost; // Whether the snake is boosting
+
+        private void readWang(MouseEvent e) {
+            wang = Math.atan2(e.getY() - getHeight() / 2.0, e.getX() - getWidth() / 2.0);
         }
-    }
 
-
-    public double getScreenWidth() {
-        return screenWidth;
-    }
-    public double getScreenHeight() {
-        return screenHeight;
+        // Method to apply the desired direction and boost to the snake
+        public void applyToSnake(Snake snake) {
+            if (wang != null) {
+                snake.setDirection(wang);
+            }
+            snake.setBoosting(boost);
+        }
     }
     void setMap(boolean[] map) {
         this.map = map;
     }
 
     @Override
-    protected void paintComponent(Graphics graphics) {
+//    protected void paintComponent(Graphics g) {
+//        super.paintComponent(g);
+//        System.out.println("paintComponent is called");
+//
+//        g.setColor(Color.RED);
+//        g.fillRect(10, 10, 200, 200); // Draw a red square
+//
+//        g.setColor(Color.GREEN);
+//        g.fillOval(220, 10, 200, 200); // Draw a green circle
+//    }
+
+
+        protected void paintComponent(Graphics graphics) {
         super.paintComponent(graphics);
+        System.out.println("paintComponent is called");
 
         if (!(graphics instanceof Graphics2D)) {
             return;
@@ -259,6 +308,7 @@ public class SlitherCanvas extends JPanel { // JPanel est une classe de Swing
                 ));
                 g.setStroke(oldStroke);
             }
+
         }
 
         g.setFont(DEBUG_FONT);
@@ -270,4 +320,8 @@ public class SlitherCanvas extends JPanel { // JPanel est une classe de Swing
         g.drawString("FPS: " + Math.round(fps), 0, g.getFontMetrics().getAscent());
         lastFrameTime = newFrameTime;
     }
+    public void setModel(SlitherModel model) {
+        this.model = model;
+    }
+
 }

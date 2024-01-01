@@ -1,9 +1,6 @@
 package tangNdam.slither;
 
-import java.util.ArrayDeque;
-import java.util.Deque;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 
 
 class SlitherModel {
@@ -210,6 +207,7 @@ class SlitherModel {
                     snake.y = -worldBoundaryRadius + (headY % worldBoundaryRadius);
                 }
             }
+            checkFoodCollisions();
     } catch (Exception e) {
         e.printStackTrace(); // This will print any exceptions to the console
     }
@@ -224,6 +222,34 @@ class SlitherModel {
             activesnakes.put(snakeID, newSnake);
         }
     }
+
+    void checkFoodCollisions() {
+        Snake snake = this.snake;
+        double snakeHeadRadius = snake.getHeadRadius(); // Using the getHeadRadius method from Snake class
+
+        List<Integer> foodToRemove = new ArrayList<>();
+        activefoods.entrySet().forEach(entry -> {
+            int foodId = entry.getKey();
+            Food food = entry.getValue();
+            double dx = snake.x - food.x;
+            double dy = snake.y - food.y;
+            double distance = Math.sqrt(dx * dx + dy * dy);
+            if (distance < snakeHeadRadius + food.getRadius()) {
+                foodToRemove.add(foodId);
+                // Here, increase snake size or score as appropriate
+                snake.setFood(snake.getFood() + food.getSize()); // Increase the food amount by the size of the food
+            }
+        });
+
+        foodToRemove.forEach(this::removeFood); // Remove the eaten food from the game
+    }
+
+    private void removeFood(int foodId) {
+        synchronized (view != null ? view.modelLock : new Object()) {
+            activefoods.remove(foodId);
+        }
+    }
+
 
     Snake getSnake(int snakeID) {
         return activesnakes.get(snakeID);
@@ -257,11 +283,7 @@ class SlitherModel {
         }
     }
 
-    void removeFood(int x, int y) {
-        synchronized (view != null ? view.modelLock : new Object()) {
-            activefoods.remove(y * worldBoundaryRadius * 3 + x);
-        }
-    }
+
 
     void addSector(int x, int y) {
         synchronized (view != null ? view.modelLock : new Object()) {
@@ -303,7 +325,9 @@ class SlitherModel {
         System.out.println("Snake initialized");
         // Add initial food
         for (int i = 0; i < 100; i++) { // for example, add 100 food items
-            addFood((int) (Math.random() * 1000), (int) (Math.random() * 1000), 1, false); // Random position and size 1
+            addFood((int) (Math.random() * (worldBoundaryRadius * 2)) - worldBoundaryRadius,
+                    (int) (Math.random() * (worldBoundaryRadius * 2)) - worldBoundaryRadius,
+                    1, false); // Random position and size 1
         }
 
         // Add initial prey

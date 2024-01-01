@@ -209,18 +209,18 @@ public class SlitherCanvas extends JPanel { // JPanel est une classe de Swing
                     }
                 }
             }
-
+            g.setColor(FOOD_COLOR);
+            model.activefoods.values().forEach(food -> {
+                double foodRadius = food.getRadius();
+                g.fill(new Ellipse2D.Double(food.x - foodRadius, food.y - foodRadius, foodRadius * 2, foodRadius * 2));
+            });
 //            g.setColor(FOREGROUND_COLOR);
 //            Stroke oldStroke = g.getStroke();
 //            g.setStroke(new BasicStroke(128));
 //            g.drawOval(-64, -64, model.worldBoundaryRadius * 2 + 128, model.worldBoundaryRadius * 2 + 128);
 //            g.setStroke(oldStroke);
 //            oldStroke = g.getStroke();
-            g.setColor(FOOD_COLOR);
-            model.activefoods.values().forEach(food -> {
-                double foodRadius = food.getRadius();
-                g.fill(new Ellipse2D.Double(food.x - foodRadius, food.y - foodRadius, foodRadius * 2, foodRadius * 2));
-            });
+
 
             model.activepreys.values().forEach(prey -> {
                 double preyRadius = prey.getRadius();

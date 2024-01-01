@@ -163,6 +163,20 @@ public class SlitherCanvas extends JPanel { // JPanel est une classe de Swing
         int h = getHeight();
         int m = Math.min(w, h);
 
+        // Save the current transform and stroke
+        AffineTransform saveTransform = g.getTransform();
+        Stroke saveStroke = g.getStroke();
+
+        // Reset to the default transform and draw the minimap border
+        g.setTransform(new AffineTransform()); // Reset to default
+        g.setStroke(new BasicStroke(1)); // Set the border thickness to 1 pixel
+        g.setColor(MAP_COLOR); // Use your predefined color for the minimap border
+        g.drawOval(w - 80, h - 80, 79, 79); // Draw the minimap border
+
+        // Restore the original state before continuing
+        g.setTransform(saveTransform);
+        g.setStroke(saveStroke);
+
         modelPaintBlock:
         synchronized (view.modelLock) {
             SlitherModel model = view.model;
@@ -195,6 +209,18 @@ public class SlitherCanvas extends JPanel { // JPanel est une classe de Swing
                 g.translate(-model.snake.x, -model.snake.y);
             }
 
+            // fixed size for the border
+            Stroke oldStroke = g.getStroke();
+
+            // Set a fixed stroke thickness for the minimap border
+            g.setStroke(new BasicStroke(1)); // Change the '1' to your desired thickness
+
+            // Draw the minimap border
+            g.setColor(MAP_COLOR);
+            g.drawOval(w - 80, h - 80, 79, 79);
+
+            // Restore the original stroke
+            g.setStroke(oldStroke);
 
             //mouse control
             if (mouseInput != null && model.snake != null) {
@@ -324,6 +350,8 @@ public class SlitherCanvas extends JPanel { // JPanel est une classe de Swing
                 ));
 //                g.setStroke(oldStroke);
             }
+            g.setTransform(saveTransform);
+            g.setStroke(saveStroke);
 
         }
 

@@ -31,8 +31,9 @@ class SlitherModel {
     public static final int DEFAULT_WORLD_BOUNDARY_RADIUS = 1000;
     public static final int DEFAULT_WORLD_SECTOR_SIZE = 50;
     public  static final double DEFAULT_SPEED_ANGLE_DIV = 1.0;
-    static final double DEFAULT_SPEED_CALC_BASE = 1.0;
-    public  static final double DEFAULT_SPEED_CAL_FACTOR = 1.0;
+    public static final double DEFAULT_SPEED_CALC_BASE = 5.0; // Was 1.0, now doubled
+    public static final double DEFAULT_SPEED_CAL_FACTOR = 5.0; // Was 1.0, now doubled
+
     public static final double DEFAULT_SNAKE_CAL_MODIFIER = 1.0;
     public static final double DEFAULT_ANGULAR_VELOCITY_FACTOR = 1.0;
     public  static final double DEFAULT_PREY_ANGULAR_VELOCITY_FACTOR = 1.0;
@@ -83,10 +84,12 @@ class SlitherModel {
         try {
         synchronized (view != null ? view.modelLock : new Object()){
             long newTime = System.currentTimeMillis();
+            double deltaTime = (newTime - lastUpdateTime) / 100.0; // Convert to seconds
+            lastUpdateTime = newTime;
 
-            double deltaTimeWIP = (newTime - lastUpdateTime) / 8.0;
-            deltaTimeWIP = Math.min(deltaTimeWIP, 5.0);
-            final double deltaTime = deltaTimeWIP;
+            for (Snake snake : activesnakes.values()) {
+                snake.update(deltaTime); // Update each snake
+            }
 
             activesnakes.values().forEach(cSnake -> {
 
@@ -130,7 +133,7 @@ class SlitherModel {
                     if (cSnake.actualAngle < 0) {
                         cSnake.actualAngle += PI2;
                     }
-                    double angle2go = (cSnake.wantedAngle - cSnake.wantedAngle) % PI2;
+                    double angle2go = (0.0) % PI2;
                     if (angle2go < 0) {
                         angle2go += PI2;
                     }
@@ -238,6 +241,10 @@ class SlitherModel {
                 foodToRemove.add(foodId);
                 // Here, increase snake size or score as appropriate
                 snake.setFood(snake.getFood() + food.getSize()); // Increase the food amount by the size of the food
+                // Add a new body part to the snake
+                double newBodyPartX = snake.x; // You need to calculate this based on the snake's movement
+                double newBodyPartY = snake.y; // You need to calculate this based on the snake's movement
+                snake.body.addLast(new SnakeBody(newBodyPartX, newBodyPartY)); // Add the new body part at the end of the snake
             }
         });
 
@@ -332,7 +339,7 @@ class SlitherModel {
 
         // Add initial prey
         for (int i = 0; i < 10; i++) { // for example, add 10 prey
-            addPrey(i, (int) (Math.random() * 1000), (int) (Math.random() * 1000), 5, 1, Math.random() * 2 * Math.PI, Math.random() * 2 * Math.PI, 3); // Random position, direction and speed
+            addPrey(i, (int) (Math.random() * 1000), (int) (Math.random() * 1000), 5, 1, Math.random() * 2 * Math.PI, Math.random() * 2 * Math.PI, 6); // Random position, direction and speed
         }
 
         // Setup the initial sectors

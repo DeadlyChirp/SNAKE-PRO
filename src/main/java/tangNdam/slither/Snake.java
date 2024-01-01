@@ -91,6 +91,59 @@ public class Snake {
     }
 
     public void setBoosting(boolean boost) {
-        this.targetspeed =boost ? getBasespeed() * 2 : getBasespeed();
+        this.targetspeed =boost ? getBasespeed() * 3 : getBasespeed();
     }
+
+    // Call this method to update the snake's position and body
+    public void update(double deltaTime) {
+        // Update the head position based on the direction
+        double speedMultiplier = 2.0; // Adjust this multiplier as needed
+        double headX = x + Math.cos(wantedAngle) * speed * deltaTime * speedMultiplier;
+        double headY = y + Math.sin(wantedAngle) * speed * deltaTime * speedMultiplier;
+
+        // Update the body segments
+        double prevX = x;
+        double prevY = y;
+        for (SnakeBody bodyPart : body) {
+            // Calculate the distance to the previous segment
+            double dist = distance(prevX, prevY, bodyPart.x, bodyPart.y);
+            // Calculate the target distance
+            double targetDist = getSegmentSpacing();
+
+            if (dist > targetDist) {
+                // Calculate the interpolation factor (this controls the fluidity)
+                double t = (dist - targetDist) / dist;
+                // Interpolate the body part position
+                bodyPart.x = interpolate(bodyPart.x, prevX, t);
+                bodyPart.y = interpolate(bodyPart.y, prevY, t);
+            }
+
+            // Update previous segment position
+            prevX = bodyPart.x;
+            prevY = bodyPart.y;
+        }
+
+
+        // Update the head position
+        x = headX;
+        y = headY;
+    }
+
+    private double getSegmentSpacing() {
+        // This should return the distance between segments, which could be a fixed value
+        // or a value that changes with the snake's size or other factors.
+        return 10; // This is an example value.
+    }
+
+    private double distance(double x1, double y1, double x2, double y2) {
+        // Calculate the distance between two points
+        return Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
+    }
+
+    private double interpolate(double start, double end, double t) {
+        // Linearly interpolate between two values
+        return start + (end - start) * t;
+    }
+
+
 }

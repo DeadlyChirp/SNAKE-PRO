@@ -163,19 +163,10 @@ public class SlitherCanvas extends JPanel { // JPanel est une classe de Swing
         int h = getHeight();
         int m = Math.min(w, h);
 
-        // Save the current transform and stroke
-        AffineTransform saveTransform = g.getTransform();
-        Stroke saveStroke = g.getStroke();
+        // Save the original stroke and transform
+        Stroke originalStroke = g.getStroke();
+        AffineTransform originalTransform = g.getTransform();
 
-        // Reset to the default transform and draw the minimap border
-        g.setTransform(new AffineTransform()); // Reset to default
-        g.setStroke(new BasicStroke(1)); // Set the border thickness to 1 pixel
-        g.setColor(MAP_COLOR); // Use your predefined color for the minimap border
-        g.drawOval(w - 80, h - 80, 79, 79); // Draw the minimap border
-
-        // Restore the original state before continuing
-        g.setTransform(saveTransform);
-        g.setStroke(saveStroke);
 
         modelPaintBlock:
         synchronized (view.modelLock) {
@@ -200,27 +191,16 @@ public class SlitherCanvas extends JPanel { // JPanel est une classe de Swing
             double scale;
             if (zoom == 0 || model.snake == null) {
                 scale = 1d * m / (model.worldBoundaryRadius * 2);
-                g.translate(w / 2 - model.worldBoundaryRadius * scale, h / 2 - model.worldBoundaryRadius * scale);
+                g.translate(w / 2.0, h / 2.0); // Translate to the center of the window
                 g.scale(scale, scale);
+                g.translate(-model.worldBoundaryRadius, -model.worldBoundaryRadius); // Translate to center the game world
             } else {
                 scale = Math.pow(1.25, zoom + 1) * m / (model.worldBoundaryRadius * 2);
-                g.translate(w / 2, h / 2);
+                g.translate(w / 2.0, h / 2.0); // Translate to the center of the window
                 g.scale(scale, scale);
-                g.translate(-model.snake.x, -model.snake.y);
+                g.translate(-model.snake.x, -model.snake.y); // Translate so that the snake is in the center
             }
 
-            // fixed size for the border
-            Stroke oldStroke = g.getStroke();
-
-            // Set a fixed stroke thickness for the minimap border
-            g.setStroke(new BasicStroke(1)); // Change the '1' to your desired thickness
-
-            // Draw the minimap border
-            g.setColor(MAP_COLOR);
-            g.drawOval(w - 80, h - 80, 79, 79);
-
-            // Restore the original stroke
-            g.setStroke(oldStroke);
 
             //mouse control
             if (mouseInput != null && model.snake != null) {
@@ -231,10 +211,11 @@ public class SlitherCanvas extends JPanel { // JPanel est une classe de Swing
             for (int y = 0; y < model.sectors.length; y++) {
                 for (int x = 0; x < model.sectors[y].length; x++) {
                     if (model.sectors[y][x]) {
-                        g.fillRect(x * model.worldsectorSize + 1, y * model.worldsectorSize+ 1, model.worldsectorSize - 2, model.worldsectorSize - 2);
+                        g.fillRect(x * model.worldsectorSize + 1, y * model.worldsectorSize + 1, model.worldsectorSize - 2, model.worldsectorSize - 2);
                     }
                 }
             }
+
             g.setColor(FOOD_COLOR);
             model.activefoods.values().forEach(food -> {
                 double foodRadius = food.getRadius();
@@ -323,12 +304,14 @@ public class SlitherCanvas extends JPanel { // JPanel est une classe de Swing
                 g.drawString(snake.name, (float) (snake.x - g.getFontMetrics().stringWidth(snake.name) / 2.0), (float) (snake.y - thickness * 2 / 3 - g.getFontMetrics().getHeight()));
                 g.drawString(lengthText, (float) (snake.x - g.getFontMetrics().stringWidth(lengthText) / 2.0), (float) (snake.y - thickness * 2 / 3));
             });
-//            g.setStroke(oldStroke);
 
             g.setTransform(oldTransform);
-
+            g.setStroke(new BasicStroke(1));
             g.setColor(MAP_COLOR);
             g.drawOval(w - 80, h - 80, 79, 79);
+            // Restore the original stroke and transform for further drawing
+            g.setStroke(originalStroke);
+            g.setTransform(originalTransform);
             boolean[] currentMap = map;
             if (currentMap != null) {
                 for (int i = 0; i < currentMap.length; i++) {
@@ -350,10 +333,11 @@ public class SlitherCanvas extends JPanel { // JPanel est une classe de Swing
                 ));
 //                g.setStroke(oldStroke);
             }
-            g.setTransform(saveTransform);
-            g.setStroke(saveStroke);
 
         }
+        // At the end of the method, reset the graphics context to its original state
+        g.setStroke(originalStroke);
+        g.setTransform(originalTransform);
 
         g.setFont(DEBUG_FONT);
         g.setColor(FOREGROUND_COLOR);

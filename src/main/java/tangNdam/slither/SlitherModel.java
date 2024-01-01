@@ -328,7 +328,9 @@ class SlitherModel {
         // Set up the initial state of the game, like adding snakes, food, and prey
         Deque<SnakeBody> snakeBodyQueue = new ArrayDeque<SnakeBody>();
 // populate snakeBodyQueue with SnakeBody objects as needed
-        addSnake(1, "Player", 500, 500, 0, 0, 4.0, 0, snakeBodyQueue);
+        int centerX = worldBoundaryRadius / 2;
+        int centerY = worldBoundaryRadius / 2;
+        addSnake(1, "Player", centerX, centerY, 0, 0, 4.0, 0, snakeBodyQueue);
         System.out.println("Snake initialized");
         // Add initial food
         for (int i = 0; i < 100; i++) { // for example, add 100 food items

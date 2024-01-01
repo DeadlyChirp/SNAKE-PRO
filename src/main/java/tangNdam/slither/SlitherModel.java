@@ -76,7 +76,7 @@ class SlitherModel {
 
     int getSnakeLength(int bodyLength, double fillAmount) {
         bodyLength = Math.min(bodyLength, maxSizeForSpeedCalculation);
-        return (int) (15 * (fpsls[bodyLength] + fillAmount * fmlts[bodyLength]) - 20);
+        return (int) (15 * (fpsls[bodyLength] + fillAmount * fmlts[bodyLength]));
     }
 
     void update() {

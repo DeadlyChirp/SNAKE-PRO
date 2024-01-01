@@ -104,13 +104,22 @@ public class SlitherCanvas extends JPanel { // JPanel est une classe de Swing
                 mouseInput.boost = false;
             }
         });
+        addMouseMotionListener(new MouseMotionAdapter() {
+            @Override
+            public void mouseMoved(MouseEvent e) {
+                mouseInput.readWang(e);
+                model.updatePlayerPosition(model.snake, mouseInput.wang, mouseInput.boost);
+            }
+        });
     }
     private class MouseInput {
         Double wang; // The desired angle of the snake's head
         boolean boost; // Whether the snake is boosting
 
         private void readWang(MouseEvent e) {
-            wang = Math.atan2(e.getY() - getHeight() / 2.0, e.getX() - getWidth() / 2.0);
+            double deltaX = e.getX() - (getWidth() / 2.0);
+            double deltaY = e.getY() - (getHeight() / 2.0);
+            wang = Math.atan2(deltaY, deltaX);
         }
 
         // Method to apply the desired direction and boost to the snake
@@ -121,6 +130,7 @@ public class SlitherCanvas extends JPanel { // JPanel est une classe de Swing
             snake.setBoosting(boost);
         }
     }
+
     void setMap(boolean[] map) {
         this.map = map;
     }
@@ -185,6 +195,11 @@ public class SlitherCanvas extends JPanel { // JPanel est une classe de Swing
                 g.translate(-model.snake.x, -model.snake.y);
             }
 
+
+            //mouse control
+            if (mouseInput != null && model.snake != null) {
+                mouseInput.applyToSnake(model.snake);
+            }
 
             g.setColor(SECTOR_COLOR);
             for (int y = 0; y < model.sectors.length; y++) {

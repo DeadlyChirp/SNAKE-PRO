@@ -278,26 +278,11 @@ class SlitherModel {
         }
     }
 
-    public void updatePlayerPosition(Player player, Double angle, Boolean boost) {
+    public void updatePlayerPosition(Snake player, Double angle, Boolean boost) {
         // on assume que le joueur est un serpent
-        if (this.snake != null) {
-            this.snake.actualAngle = angle;
-
-            // Si boost, alors la vitesse est plus grande sinon la vitesse est normale
-
-            double boostSpeed = 1.5; // Exemple valeur pour la vitesse boost
-            double normalSpeed = 1.0; // Exemple valeur pour la vitesse normale
-
-            this.snake.targetspeed = boost ? boostSpeed : normalSpeed;
-
-            // mise a jour de la vitesse
-            if (this.snake.speed < this.snake.targetspeed) {
-                this.snake.speed += (this.snake.targetspeed - this.snake.speed) * 0.1; // Augmenter la vitesse
-            } else if (this.snake.speed > this.snake.targetspeed) {
-                this.snake.speed -= (this.snake.speed - this.snake.targetspeed) * 0.1; // Ralentir la vitesse
-            }
-
-
+        if (snake != null) {
+            snake.setDirection(angle);
+            snake.setBoosting(boost);
         }
     }
 

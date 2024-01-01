@@ -175,15 +175,16 @@ public class SlitherCanvas extends JPanel { // JPanel est une classe de Swing
             AffineTransform oldTransform = g.getTransform();
             double scale;
             if (zoom == 0 || model.snake == null) {
-                g.translate((w - m) / 2, (h - m) / 2);
                 scale = 1d * m / (model.worldBoundaryRadius * 2);
+                g.translate(w / 2 - model.worldBoundaryRadius * scale, h / 2 - model.worldBoundaryRadius * scale);
                 g.scale(scale, scale);
             } else {
-                g.translate(w / 2, h / 2);
                 scale = Math.pow(1.25, zoom + 1) * m / (model.worldBoundaryRadius * 2);
+                g.translate(w / 2, h / 2);
                 g.scale(scale, scale);
                 g.translate(-model.snake.x, -model.snake.y);
             }
+
 
             g.setColor(SECTOR_COLOR);
             for (int y = 0; y < model.sectors.length; y++) {
@@ -287,7 +288,7 @@ public class SlitherCanvas extends JPanel { // JPanel est une classe de Swing
 
             g.setColor(MAP_COLOR);
             g.drawOval(w - 80, h - 80, 79, 79);
-            boolean[] currentMap = map; // TODO: save map in model, set to null on reconnect
+            boolean[] currentMap = map;
             if (currentMap != null) {
                 for (int i = 0; i < currentMap.length; i++) {
                     if (currentMap[i]) {

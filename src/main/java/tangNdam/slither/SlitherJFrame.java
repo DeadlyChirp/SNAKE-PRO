@@ -135,7 +135,11 @@ private static final String[] SNAKES = {
 
         // Finalize frame setup
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        pack();
+        setExtendedState(JFrame.MAXIMIZED_BOTH);
+//        setUndecorated(true); //On enleve la barre de titre quitter etc, a faire pour mode full screen
+//        GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().setFullScreenWindow(this);
+
+
         setVisible(true);
 
         addWindowListener(new WindowAdapter() {

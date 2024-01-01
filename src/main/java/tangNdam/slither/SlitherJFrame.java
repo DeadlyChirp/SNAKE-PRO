@@ -108,6 +108,7 @@ private static final String[] SNAKES = {
         // Pass the model to the canvas
         this.canvas = new SlitherCanvas(this);
         this.canvas.setModel(this.model);
+        this.setPreferredSize(new Dimension(1064, 768));
 
         // Initialize components
         serverField = new JTextField(15);

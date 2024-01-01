@@ -194,12 +194,12 @@ public class SlitherCanvas extends JPanel { // JPanel est une classe de Swing
                 }
             }
 
-            g.setColor(FOREGROUND_COLOR);
-            Stroke oldStroke = g.getStroke();
-            g.setStroke(new BasicStroke(128));
-            g.drawOval(-64, -64, model.worldBoundaryRadius * 2 + 128, model.worldBoundaryRadius * 2 + 128);
-            g.setStroke(oldStroke);
-
+//            g.setColor(FOREGROUND_COLOR);
+//            Stroke oldStroke = g.getStroke();
+//            g.setStroke(new BasicStroke(128));
+//            g.drawOval(-64, -64, model.worldBoundaryRadius * 2 + 128, model.worldBoundaryRadius * 2 + 128);
+//            g.setStroke(oldStroke);
+//            oldStroke = g.getStroke();
             g.setColor(FOOD_COLOR);
             model.activefoods.values().forEach(food -> {
                 double foodRadius = food.getRadius();
@@ -217,7 +217,7 @@ public class SlitherCanvas extends JPanel { // JPanel est une classe de Swing
                 g.fill(new Ellipse2D.Double(prey.x - preyRadius, prey.y - preyRadius, preyRadius * 2, preyRadius * 2));
             });
 
-            oldStroke = g.getStroke();
+
             g.setFont(NAME_FONT.deriveFont((float) (18 / Math.pow(scale, 0.75))));
             model.activesnakes.values().forEach(snake -> {
                 double thickness = 16 + snake.body.size() / 4.0;
@@ -281,7 +281,7 @@ public class SlitherCanvas extends JPanel { // JPanel est une classe de Swing
                 g.drawString(snake.name, (float) (snake.x - g.getFontMetrics().stringWidth(snake.name) / 2.0), (float) (snake.y - thickness * 2 / 3 - g.getFontMetrics().getHeight()));
                 g.drawString(lengthText, (float) (snake.x - g.getFontMetrics().stringWidth(lengthText) / 2.0), (float) (snake.y - thickness * 2 / 3));
             });
-            g.setStroke(oldStroke);
+//            g.setStroke(oldStroke);
 
             g.setTransform(oldTransform);
 
@@ -298,7 +298,7 @@ public class SlitherCanvas extends JPanel { // JPanel est une classe de Swing
             if (zoom != 0 && model.snake != null) {
                 double zoomScale = Math.pow(1.25, zoom + 1);
                 g.setColor(MAP_POSITION_COLOR);
-                oldStroke = g.getStroke();
+//                oldStroke = g.getStroke();
                 g.setStroke(new BasicStroke(2));
                 g.draw(new Rectangle2D.Double(
                         model.snake.x * 80 / (model.worldBoundaryRadius * 2) - w / zoomScale / m * 40 + w - 80,
@@ -306,7 +306,7 @@ public class SlitherCanvas extends JPanel { // JPanel est une classe de Swing
                         w / zoomScale / m * 80,
                         h / zoomScale / m * 80
                 ));
-                g.setStroke(oldStroke);
+//                g.setStroke(oldStroke);
             }
 
         }

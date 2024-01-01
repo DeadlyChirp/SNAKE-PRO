@@ -192,7 +192,24 @@ class SlitherModel {
 
             lastUpdateTime = newTime;
         }
+//terrain sans bords :
+            for (Snake snake : activesnakes.values()) {
+                double headX = snake.x;
+                double headY = snake.y;
 
+                // Check boundaries and wrap around if necessary
+                if (headX < -worldBoundaryRadius) {
+                    snake.x = worldBoundaryRadius - (headX % worldBoundaryRadius);
+                } else if (headX > worldBoundaryRadius) {
+                    snake.x = -worldBoundaryRadius + (headX % worldBoundaryRadius);
+                }
+
+                if (headY < -worldBoundaryRadius) {
+                    snake.y = worldBoundaryRadius - (headY % worldBoundaryRadius);
+                } else if (headY > worldBoundaryRadius) {
+                    snake.y = -worldBoundaryRadius + (headY % worldBoundaryRadius);
+                }
+            }
     } catch (Exception e) {
         e.printStackTrace(); // This will print any exceptions to the console
     }

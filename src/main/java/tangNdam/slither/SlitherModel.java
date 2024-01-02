@@ -315,6 +315,11 @@ class SlitherModel {
         }
     }
 
+    // In SlitherModel class
+    public int getWorldBoundaryRadius() {
+        return worldBoundaryRadius;
+    }
+
 
     public int getX() {
         return this.snake != null ? (int) this.snake.x : 0;

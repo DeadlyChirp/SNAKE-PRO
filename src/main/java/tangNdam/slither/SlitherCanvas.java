@@ -72,6 +72,22 @@ public class SlitherCanvas extends JPanel { // JPanel est une classe de Swing
                 repaint();
             }
         }, 0, 17); // Approximately 60 FPS
+
+        addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                if (model != null && model.getSnake(1) != null) {
+                    model.getSnake(1).startBoosting();
+                }
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                if (model != null && model.getSnake(1) != null) {
+                    model.getSnake(1).stopBoosting();
+                }
+            }
+        });
     }
 
     public void stopRepaintTimer() {

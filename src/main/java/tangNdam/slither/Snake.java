@@ -1,5 +1,6 @@
 package tangNdam.slither;
 
+import java.awt.*;
 import java.util.Deque;
 
 //Ici Deque est une interface qui
@@ -30,6 +31,8 @@ public class Snake {
     private double foodAmount; // food eaten
     final Deque<SnakeBody> body; // body parts
     private final SlitherModel gamemodel; // model
+
+    private boolean boosting;
 
     Snake(int id, String name, double x, double y, double wantedAngle, double actualAngle, double speed, double foodAmount, Deque<SnakeBody> body, SlitherModel gamemodel)  {
         this.id = id;
@@ -140,9 +143,39 @@ public class Snake {
         return Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
     }
 
+    // Cette methode sert a calculer la position de chaque partie du corps du serpent
     private double interpolate(double start, double end, double t) {
         // Linearly interpolate between two values
         return start + (end - start) * t;
+    }
+
+
+    // Add a method to start boosting
+    public void startBoosting() {
+        this.boosting = true;
+        this.targetspeed = getBasespeed() * 2; // Example: double the speed
+    }
+
+    // Add a method to stop boosting
+    public void stopBoosting() {
+        this.boosting = false;
+        this.targetspeed = getBasespeed();
+    }
+
+    // Call this method when updating the snake's state
+    public void updateBoostState(double deltaTime) {
+        if (this.boosting && this.foodAmount > 0) {
+            // Reduce the food amount to simulate "energy" consumption
+            this.foodAmount -= deltaTime; // Reduce at a rate of 1 per second
+            if (this.foodAmount < 0) {
+                this.foodAmount = 0;
+            }
+            // Set the speed to the target speed while boosting
+            this.speed = this.targetspeed;
+        } else {
+            // Gradually return to the base speed when not boosting
+            this.speed = getBasespeed();
+        }
     }
 
 

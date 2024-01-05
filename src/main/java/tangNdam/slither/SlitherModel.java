@@ -27,6 +27,7 @@ class SlitherModel {
     Snake snake;
 
 
+
     //test test values
     public static final int DEFAULT_WORLD_BOUNDARY_RADIUS = 1000;
     public static final int DEFAULT_WORLD_SECTOR_SIZE = 50;
@@ -39,6 +40,10 @@ class SlitherModel {
     public  static final double DEFAULT_PREY_ANGULAR_VELOCITY_FACTOR = 1.0;
     public  static final double DEFAULT_CST = 1.0;
     public static final int DEFAULT_MAX_SIZE_FOR_SPEED_CALCULATION = 100;
+
+
+    private long lastFrameTime; // Field to store the time of the last frame
+
 
 
     public SlitherModel(SlitherJFrame view) {
@@ -61,6 +66,7 @@ class SlitherModel {
         this.preyAngularVelocityFactor = preyAngularVelocityFactor;
         this.maxSizeForSpeedCalculation = maxSizeForSpeedCalculation;
         this.view = view;
+        lastFrameTime = System.currentTimeMillis();
 
         sectors = new boolean[worldBoundaryRadius * 2 / worldsectorSize][worldBoundaryRadius * 2 / worldsectorSize];
 
@@ -89,6 +95,11 @@ class SlitherModel {
 
             for (Snake snake : activesnakes.values()) {
                 snake.update(deltaTime); // Update each snake
+            }
+
+            //boost pour snake
+            if (this.snake != null) {
+                this.snake.updateBoostState(deltaTime);
             }
 
             activesnakes.values().forEach(cSnake -> {
@@ -192,6 +203,8 @@ class SlitherModel {
 
             lastUpdateTime = newTime;
         }
+
+
 //terrain sans bords :
             for (Snake snake : activesnakes.values()) {
                 double headX = snake.x;

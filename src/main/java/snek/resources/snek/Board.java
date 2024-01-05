@@ -18,17 +18,16 @@ import javax.swing.Timer;
 
 public class Board extends JPanel implements ActionListener {
 
-    private final int DOT_SIZE = 20; // Increase the dot size for larger grid cells
-    private final int B_WIDTH = DOT_SIZE * 20; // Example: 20 grid cells wide
-    private final int B_HEIGHT = DOT_SIZE * 20; // Example: 20 grid cells tall
-    private final int ALL_DOTS = (B_WIDTH * B_HEIGHT) / (DOT_SIZE * DOT_SIZE); // Recalculate the maximum number of dots
-    private final int RAND_POS = (B_WIDTH / DOT_SIZE); // Recalculate the random position range
+    private final int NUM_CELLS = 20; // Number of cells in each direction
+    private final int DOT_SIZE; // Size of each cell/grid element
+    private final int B_WIDTH; // Width of the board
+    private final int B_HEIGHT; // Height of the board
+    private final int ALL_DOTS; // Maximum number of possible dots on the board
+    private final int RAND_POS; // Range for random positioning of the apple
+    private final int DELAY = 250; // Game speed
 
-
-    private final int DELAY = 200;
-
-    private final int x[] = new int[ALL_DOTS];
-    private final int y[] = new int[ALL_DOTS];
+    private final int[] x;
+    private final int[] y;
 
     private int dots;
     private int apple_x;
@@ -51,7 +50,19 @@ public class Board extends JPanel implements ActionListener {
 
     private int score = 0;
 
+    private int speedIncrease = 10;
+
     public Board() {
+        int screenSize = Math.min(Toolkit.getDefaultToolkit().getScreenSize().width,
+                Toolkit.getDefaultToolkit().getScreenSize().height);
+        DOT_SIZE = screenSize / NUM_CELLS;
+        B_WIDTH = DOT_SIZE * NUM_CELLS;
+        B_HEIGHT = DOT_SIZE * NUM_CELLS;
+        ALL_DOTS = NUM_CELLS * NUM_CELLS;
+        RAND_POS = NUM_CELLS;
+
+        x = new int[ALL_DOTS];
+        y = new int[ALL_DOTS];
 
         initBoard();
     }
@@ -202,13 +213,19 @@ public class Board extends JPanel implements ActionListener {
     }
 
     private void checkApple() {
-
         if ((x[0] == apple_x) && (y[0] == apple_y)) {
-
             dots++;
             locateApple();
+            updateScore();
+            increaseSpeed(); // Call to increase the speed of the snake
         }
-        updateScore();
+    }
+
+    private void increaseSpeed() {
+        if (DELAY - speedIncrease > 0) {
+            timer.setDelay(DELAY - speedIncrease); // Update the delay to increase the speed
+            speedIncrease += 10; // Increase the speed by a larger increment each time
+        }
     }
     private void updateScore() {
         score = (dots - 3) * 1;
@@ -279,14 +296,11 @@ public class Board extends JPanel implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-
         if (inGame) {
-
             checkApple();
             checkCollision();
             move();
         }
-
         repaint();
     }
 

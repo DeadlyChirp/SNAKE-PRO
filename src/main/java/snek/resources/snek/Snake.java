@@ -12,13 +12,14 @@ public class Snake extends JFrame {
     private void initUI() {
 
         add(new Board());
-
-        setResizable(false);
-        pack();
+        setExtendedState(JFrame.MAXIMIZED_BOTH); // Fullscreen mode
+        setUndecorated(true); // Optional: remove window borders for true full screen
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         setTitle("Snake");
-        setLocationRelativeTo(null);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        pack(); // Pack the frame around the components
+        setLocationRelativeTo(null); // Center the window
+        setVisible(true); // Make the frame visible
     }
 }
 

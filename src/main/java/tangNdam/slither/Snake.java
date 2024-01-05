@@ -33,6 +33,7 @@ public class Snake {
     private final SlitherModel gamemodel; // model
 
     private boolean boosting;
+    public static final double MAX_SCALE = 10.0;
 
     Snake(int id, String name, double x, double y, double wantedAngle, double actualAngle, double speed, double foodAmount, Deque<SnakeBody> body, SlitherModel gamemodel)  {
         this.id = id;
@@ -50,8 +51,10 @@ public class Snake {
 
     }
 
-    private double getScale  (){ //sert a calculer la taille du serpent
-        return Math.min(6, 1 + (body.size() - 2) / 106.0);
+    double getScale() {
+        double baseScale = Math.min(6, 1 + (body.size() - 2) / 106.0);
+        double foodScaleFactor = 1 + foodAmount / 100.0; // Assuming each food unit increases size slightly
+        return baseScale * foodScaleFactor;
     }
     double getTurnRadiusFactor() { //sert a calculer l'angle du serpent
         return 0.13 + 0.87 * Math.pow((7 - getScale()) / 6, 2);
@@ -62,10 +65,16 @@ public class Snake {
         return Math.min(speed / gamemodel.speedAnglediv, 1);
     }
 
-    private double getBasespeed() {  //sert a calculer la vitesse finale du serpent
+    private double getBasespeed() {
+        // Basic speed calculation
+        double baseSpeed = gamemodel.speedCalculBase + gamemodel.speedCalFactor * getScale();
 
-        return gamemodel.speedCalculBase + gamemodel.speedCalFactor * getScale();
+        // Reduce speed based on the size of the snake
+        double sizeFactor = Math.max(0.5, 1 - (body.size() * 0.03)); // Reduces speed slightly as the snake grows
+
+        return baseSpeed * sizeFactor; // Apply the size factor to the speed
     }
+
 
     boolean isBoosting() { //sert a calculer si le serpent accelere ou pas
 

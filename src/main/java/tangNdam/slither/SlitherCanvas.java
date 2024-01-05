@@ -53,6 +53,8 @@ public class SlitherCanvas extends JPanel { // JPanel est une classe de Swing
     private SlitherModel model;
 
 
+
+
     // Constructor
     // Constructor
     public SlitherCanvas(SlitherJFrame view) {
@@ -203,6 +205,8 @@ public class SlitherCanvas extends JPanel { // JPanel est une classe de Swing
                 g.fillOval(minimapX, minimapY, 5, 5); // Adjust size as needed
             }
 
+
+            // Zoom and translate the graphics context
             AffineTransform oldTransform = g.getTransform();
             double scale;
             if (zoom == 0 || model.snake == null) {
@@ -259,7 +263,8 @@ public class SlitherCanvas extends JPanel { // JPanel est une classe de Swing
 
             g.setFont(NAME_FONT.deriveFont((float) (18 / Math.pow(scale, 0.75))));
             model.activesnakes.values().forEach(snake -> {
-                double thickness = 16 + snake.body.size() / 4.0;
+                double snakeScale = Math.min(snake.getScale(), Snake.MAX_SCALE); // Ensure the scale does not exceed the max
+                double thickness = 16 + snakeScale * 10; // Calculate the thickness of the snake
                 if (snake.body.size() >= 2) {
                     g.setColor(snake == model.snake ? OWN_SNAKE_BODY_COLOR : SNAKE_BODY_COLOR);
                     g.setStroke(new BasicStroke((float) thickness, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));

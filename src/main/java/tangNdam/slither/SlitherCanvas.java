@@ -63,7 +63,7 @@ public class SlitherCanvas extends JPanel { // JPanel est une classe de Swing
         setBackground(BACKGROUND_COLOR);
         setForeground(FOREGROUND_COLOR);
 
-        this.worldBoundaryRadius = 500;
+        this.worldBoundaryRadius = 1000;
 
         // Initialize mouse controls
         initMouseControls();
@@ -219,19 +219,15 @@ public class SlitherCanvas extends JPanel { // JPanel est une classe de Swing
         if (model == null) {
             return; // Don't draw if the model is not set
         }
-        int boundaryRadius = model.getWorldBoundaryRadius(); // Use the getter method
+        int boundaryRadius = getWorldBoundaryRadius(); // Use the getter method
 
         // Set wall color and thickness
         g.setColor(Color.RED);
         g.setStroke(new BasicStroke(3)); // Thick line for visibility
 
-        // Draw a rectangle representing the wall at the boundary
-        int wallThickness = 10; // Change as needed
-        int wallOffset = wallThickness / 2;
-        int boundary = boundaryRadius * 2;
-
-        // You need to draw the wall considering the scale and translation of the game world
-        g.drawRect(-boundaryRadius - wallOffset, -boundaryRadius - wallOffset, boundary + wallThickness, boundary + wallThickness);
+        // Draw a circle representing the wall at the boundary
+        // To draw a centered circle, subtract the radius from both x and y coordinates
+        g.drawOval(-boundaryRadius, -boundaryRadius, boundaryRadius * 2, boundaryRadius * 2);
     }
 
 
@@ -275,7 +271,7 @@ public class SlitherCanvas extends JPanel { // JPanel est une classe de Swing
                 drawSnakes(g);
                 drawFoods(g);
                 drawPreys(g);
-                drawMinimap(g);
+//                drawMinimap(g);
             }
         }
     }
@@ -378,50 +374,53 @@ public class SlitherCanvas extends JPanel { // JPanel est une classe de Swing
     }
 
     private void drawMinimap(Graphics2D g) {
-        int minimapSize = 80; // The size of the minimap
+        int minimapSize = 80; // The diameter of the circular minimap
         int w = getWidth();
         int h = getHeight();
-        int minimapX = w - minimapSize; // Position at the bottom right corner
-        int minimapY = h - minimapSize;
+        int minimapX = w - minimapSize - 10; // Adjust for padding from edges
+        int minimapY = h - minimapSize - 10;
 
-
-
-        // Draw the minimap background
+        // Draw the minimap background as a circle
         g.setColor(MAP_COLOR);
-        g.fillRect(minimapX, minimapY, minimapSize, minimapSize);
+        g.fillOval(minimapX, minimapY, minimapSize, minimapSize);
 
         // Calculate the scale of the minimap relative to the entire game world
         double minimapScale = (double) minimapSize / (model.worldBoundaryRadius * 2);
 
         // Draw all food on the minimap
         for (Food food : model.activefoods.values()) {
-            // Calculate the food's position on the minimap
-            // Make sure food's position is clamped within the world boundaries before scaling
-            double foodMinimapX = Math.min(Math.max(food.x, -model.worldBoundaryRadius), model.worldBoundaryRadius);
-            double foodMinimapY = Math.min(Math.max(food.y, -model.worldBoundaryRadius), model.worldBoundaryRadius);
+            double foodMinimapX = (food.x + model.worldBoundaryRadius) * minimapScale;
+            double foodMinimapY = (food.y + model.worldBoundaryRadius) * minimapScale;
 
-            foodMinimapX = (foodMinimapX + model.worldBoundaryRadius) * minimapScale + minimapX;
-            foodMinimapY = (foodMinimapY + model.worldBoundaryRadius) * minimapScale + minimapY;
+            // Translate and clamp positions to fit within the minimap circle
+            foodMinimapX = clampPosition(foodMinimapX, minimapSize);
+            foodMinimapY = clampPosition(foodMinimapY, minimapSize);
 
-            g.setColor(FOOD_COLOR); // Use the food's color
-            g.fillRect((int) foodMinimapX, (int) foodMinimapY, 2, 2); // Represent the food as a small dot
+            g.setColor(FOOD_COLOR);
+            g.fillRect((int) (minimapX + foodMinimapX - 1), (int) (minimapY + foodMinimapY - 1), 2, 2); // Draw food as small dots
         }
 
-        // Draw the minimap border cube (visible area)
+        // Draw the snake's position as a distinct point on the minimap
         if (model.snake != null) {
-            // Calculate the top-left corner of the visible area on the minimap
-            int visibleAreaMinimapX = (int) ((model.snake.x - w / 2.0 / viewScale + model.worldBoundaryRadius) * minimapScale) + minimapX;
-            int visibleAreaMinimapY = (int) ((model.snake.y - h / 2.0 / viewScale + model.worldBoundaryRadius) * minimapScale) + minimapY;
+            double snakeMinimapX = (model.snake.x + model.worldBoundaryRadius) * minimapScale;
+            double snakeMinimapY = (model.snake.y + model.worldBoundaryRadius) * minimapScale;
 
-            // Calculate the width and height of the visible area on the minimap
-            int visibleAreaMinimapWidth = (int) (w / viewScale * minimapScale);
-            int visibleAreaMinimapHeight = (int) (h / viewScale * minimapScale);
+            // Translate and clamp positions to fit within the minimap circle
+            snakeMinimapX = clampPosition(snakeMinimapX, minimapSize);
+            snakeMinimapY = clampPosition(snakeMinimapY, minimapSize);
 
-            g.setColor(MAP_POSITION_COLOR);
-            g.drawRect(visibleAreaMinimapX, visibleAreaMinimapY, visibleAreaMinimapWidth, visibleAreaMinimapHeight);
+            g.setColor(new Color(0, 255, 0)); // Green color for the snake's point
+            g.fillRect((int) (minimapX + snakeMinimapX - 2), (int) (minimapY + snakeMinimapY - 2), 4, 4); // Draw the snake's position larger
         }
     }
 
+    // Helper method to clamp positions within the minimap circle
+    private double clampPosition(double position, int size) {
+        double radius = size / 2.0;
+        double angle = Math.atan2(position - radius, position - radius);
+        double distance = Math.min(radius, Math.hypot(position - radius, position - radius));
+        return radius + distance * Math.cos(angle);
+    }
 
 
 

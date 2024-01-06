@@ -204,6 +204,18 @@ class SlitherModel {
             lastUpdateTime = newTime;
         }
 
+        //check le mur du jeu et wrap around si besoin
+            for (Snake snake : activesnakes.values()) {
+                double distanceFromCenter = Math.sqrt(snake.x * snake.x + snake.y * snake.y);
+                if (distanceFromCenter > worldBoundaryRadius) {
+                    // Find the angle from the center of the world to the snake's head
+                    double angleFromCenter = Math.atan2(snake.y, snake.x);
+                    // Place the snake's head on the boundary at this angle but on the opposite side of the circle
+                    snake.x = Math.cos(angleFromCenter) * worldBoundaryRadius * -1;
+                    snake.y = Math.sin(angleFromCenter) * worldBoundaryRadius * -1;
+                }
+            }
+
 
 //terrain sans bords :
             for (Snake snake : activesnakes.values()) {
@@ -299,9 +311,15 @@ class SlitherModel {
 
     void addFood(int x, int y, double size, boolean fastSpawn) {
         synchronized (view != null ? view.modelLock : new Object()) {
-            activefoods.put(y * worldBoundaryRadius * 3 + x, new Food(x, y, size, fastSpawn));
+            // Calculate the distance from the center
+            double distanceFromCenter = Math.sqrt(x * x + y * y);
+            // Check if the position is within the world boundary radius
+            if (distanceFromCenter <= worldBoundaryRadius) {
+                activefoods.put(y * worldBoundaryRadius * 3 + x, new Food(x, y, size, fastSpawn));
+            }
         }
     }
+
 
 
 
@@ -351,10 +369,13 @@ class SlitherModel {
         addSnake(1, "Player", centerX, centerY, 0, 0, 4.0, 0, snakeBodyQueue);
         System.out.println("Snake initialized");
         // Add initial food
-        for (int i = 0; i < 100; i++) { // for example, add 100 food items
-            addFood((int) (Math.random() * (worldBoundaryRadius * 2)) - worldBoundaryRadius,
-                    (int) (Math.random() * (worldBoundaryRadius * 2)) - worldBoundaryRadius,
-                    1, false); // Random position and size 1
+        Random rand = new Random();
+        for (int i = 0; i < 100; i++) {
+            int angle = rand.nextInt(360);
+            double radius = rand.nextDouble() * worldBoundaryRadius;
+            int x = (int) (Math.cos(Math.toRadians(angle)) * radius);
+            int y = (int) (Math.sin(Math.toRadians(angle)) * radius);
+            addFood(x, y, 1, false);
         }
 
         // Add initial prey

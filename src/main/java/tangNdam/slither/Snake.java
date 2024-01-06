@@ -172,20 +172,28 @@ public class Snake {
     }
 
     // Call this method when updating the snake's state
+    // Call this method when updating the snake's state
     public void updateBoostState(double deltaTime) {
         if (this.boosting && this.foodAmount > 0) {
-            // Reduce the food amount to simulate "energy" consumption
-            this.foodAmount -= deltaTime; // Reduce at a rate of 1 per second
+            double boostCostPerSecond = 1.0; // Define the cost of boosting
+            double boostCost = boostCostPerSecond * deltaTime;
+
+            // Deduct the boost cost from the total food amount
+            this.foodAmount -= boostCost;
             if (this.foodAmount < 0) {
-                this.foodAmount = 0;
+                this.foodAmount = 0; // Prevent negative food amount
+                this.boosting = false; // Stop boosting if food is depleted
             }
+
             // Set the speed to the target speed while boosting
             this.speed = this.targetspeed;
         } else {
-            // Gradually return to the base speed when not boosting
+            // Return to base speed when not boosting
             this.speed = getBasespeed();
         }
     }
+
+
 
 
 }

@@ -40,7 +40,7 @@ public class SlitherCanvas extends JPanel { // JPanel est une classe de Swing
 
 
     private MouseInput mouseInput;
-    private int zoom = 12;
+    private int zoom = 2;
 
     private boolean[] map;
     private final SlitherJFrame view;
@@ -50,6 +50,9 @@ public class SlitherCanvas extends JPanel { // JPanel est une classe de Swing
     private SlitherModel model;
 
     private int worldBoundaryRadius;
+
+    private double viewScale; // add this as a member variable
+
 
 
     // Constructor
@@ -97,11 +100,13 @@ public class SlitherCanvas extends JPanel { // JPanel est une classe de Swing
 
     private void initMouseControls() {
         mouseInput = new MouseInput();
-        addMouseWheelListener(e -> {
-            zoom -= e.getWheelRotation();
-            zoom = Math.max(zoom, 0);
-            zoom = Math.min(zoom, 18);
-        });
+
+        //mouse scroller
+//        addMouseWheelListener(e -> {
+//            zoom -= e.getWheelRotation();
+//            zoom = Math.max(zoom, 0);
+//            zoom = Math.min(zoom, 18);
+//        });
 
         addMouseMotionListener(new MouseMotionAdapter() {
             @Override
@@ -152,239 +157,6 @@ public class SlitherCanvas extends JPanel { // JPanel est une classe de Swing
         this.map = map;
     }
 
-//    @Override
-//    protected void paintComponent(Graphics graphics) {
-//        super.paintComponent(graphics);
-//        System.out.println("paintComponent is called");
-//
-//        if (!(graphics instanceof Graphics2D g)) {
-//            return;
-//        }
-//
-//        g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-//
-//        int w = getWidth();
-//        int h = getHeight();
-//        int m = Math.min(w, h);
-//
-//        // Save the original stroke and transform
-//        Stroke originalStroke = g.getStroke();
-//        AffineTransform originalTransform = g.getTransform();
-//
-//        // Draw the static grid background before the transform is applied
-//        int gridSize = model.worldsectorSize;
-//        int gridCount = model.worldBoundaryRadius * 2 / gridSize;
-//        g.setColor(SECTOR_COLOR);
-//        for (int i = -gridCount; i <= gridCount; i++) {
-//            for (int j = -gridCount; j <= gridCount; j++) {
-//                g.drawRect(w / 2 + i * gridSize - gridSize / 2, h / 2 + j * gridSize - gridSize / 2, gridSize, gridSize);
-//            }
-//        }
-//        // Apply transform for snake and other game elements
-//        double viewScale;
-//        double translateX;
-//        double translateY;
-//        if (model.snake == null) {
-//            viewScale = 1d * m / (model.worldBoundaryRadius * 2);
-//            translateX = w / 2.0;
-//            translateY = h / 2.0;
-//        } else {
-//            viewScale = Math.pow(1.25, zoom) * m / (model.worldBoundaryRadius * 2);
-//            translateX = w / 2.0 - viewScale * model.snake.x;
-//            translateY = h / 2.0 - viewScale * model.snake.y;
-//        }
-//
-//        // Apply the transformations
-//        AffineTransform transform = AffineTransform.getTranslateInstance(translateX, translateY);
-//        transform.scale(viewScale, viewScale);
-//        g.setTransform(transform);
-//
-//        modelPaintBlock:
-//        synchronized (view.modelLock) {
-//            SlitherModel model = view.model;
-//            if (model == null) {
-//                break modelPaintBlock;
-//            }
-//            if (model.snake != null) {
-//                int playerX = model.getX();
-//                int playerY = model.getY();
-//                // Map these coordinates to the minimap
-//                // Assuming the minimap size is 80x80 and located at the bottom right
-//                double minimapScale = 80.0 / (model.worldBoundaryRadius * 2);
-//                int minimapX = (int)(playerX * minimapScale) + w - 80;
-//                int minimapY = (int)(playerY * minimapScale) + h - 80;
-//
-//                g.setColor(Color.RED); // mainTest.Player position color
-//                g.fillOval(minimapX, minimapY, 5, 5); // Adjust size as needed
-//            }
-//
-//
-//            // Zoom and translate the graphics context
-//            AffineTransform oldTransform = g.getTransform();
-//            double scale;
-//            if (zoom == 0 || model.snake == null) {
-//                scale = 1d * m / (model.worldBoundaryRadius * 2);
-//                g.translate(w / 2.0, h / 2.0); // Translate to the center of the window
-//                g.scale(scale, scale);
-//                g.translate(-model.worldBoundaryRadius, -model.worldBoundaryRadius); // Translate to center the game world
-//            } else {
-//                scale = Math.pow(1.25, zoom + 1) * m / (model.worldBoundaryRadius * 2);
-//                g.translate(w / 2.0, h / 2.0); // Translate to the center of the window
-//                g.scale(scale, scale);
-//                g.translate(-model.snake.x, -model.snake.y); // Translate so that the snake is in the center
-//            }
-//
-//
-//            //mouse control
-//            if (mouseInput != null && model.snake != null) {
-//                mouseInput.applyToSnake(model.snake);
-//            }
-//
-//            g.setColor(SECTOR_COLOR);
-//            for (int y = 0; y < model.sectors.length; y++) {
-//                for (int x = 0; x < model.sectors[y].length; x++) {
-//                    if (model.sectors[y][x]) {
-//                        g.fillRect(x * model.worldsectorSize + 1, y * model.worldsectorSize + 1, model.worldsectorSize - 2, model.worldsectorSize - 2);
-//                    }
-//                }
-//            }
-//
-//            g.setColor(FOOD_COLOR);
-//            model.activefoods.values().forEach(food -> {
-//                final double radius = food.getRadius(); // Make the variable final or effectively final
-//                g.fill(new Ellipse2D.Double(food.x - radius, food.y - radius, radius * 2, radius * 2));
-//            });
-////            g.setColor(FOREGROUND_COLOR);
-////            Stroke oldStroke = g.getStroke();
-////            g.setStroke(new BasicStroke(128));
-////            g.drawOval(-64, -64, model.worldBoundaryRadius * 2 + 128, model.worldBoundaryRadius * 2 + 128);
-////            g.setStroke(oldStroke);
-////            oldStroke = g.getStroke();
-//
-//
-//            model.activepreys.values().forEach(prey -> {
-//                double preyRadius = prey.getRadius();
-//                if (preyRadius <= 0) {
-//                    return;
-//                }
-//                g.setPaint(new RadialGradientPaint((float) (prey.x - 0.5 / scale), (float) (prey.y - 0.5 / scale), (float) (preyRadius * 2), PREY_HALO_FRACTIONS, PREY_HALO_COLORS));
-//                g.fillRect((int) Math.floor(prey.x - preyRadius * 2 - 1), (int) Math.floor(prey.y - preyRadius * 2 - 1), (int) (preyRadius * 4 + 3), (int) (preyRadius * 4 + 3));
-//                g.setColor(PREY_COLOR);
-//                g.fill(new Ellipse2D.Double(prey.x - preyRadius, prey.y - preyRadius, preyRadius * 2, preyRadius * 2));
-//            });
-//
-//
-//            g.setFont(NAME_FONT.deriveFont((float) (18 / Math.pow(scale, 0.75))));
-//            model.activesnakes.values().forEach(snake -> {
-//                double snakeScale = Math.min(snake.getScale(), Snake.MAX_SCALE); // Ensure the scale does not exceed the max
-//                double thickness = 16 + snakeScale * 10; // Calculate the thickness of the snake
-//                if (snake.body.size() >= 2) {
-//                    g.setColor(snake == model.snake ? OWN_SNAKE_BODY_COLOR : SNAKE_BODY_COLOR);
-//                    g.setStroke(new BasicStroke((float) thickness, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
-//
-//                    double totalLength = 0;
-//                    double lastX = 0, lastY = 0;
-//                    for (SnakeBody bodyPart : snake.body) {
-//                        if (bodyPart != snake.body.getFirst()) {
-//                            totalLength += Math.sqrt((bodyPart.x - lastX) * (bodyPart.x - lastX) + (bodyPart.y - lastY) * (bodyPart.y - lastY));
-//                        }
-//                        if (bodyPart != snake.body.getLast()) {
-//                            lastX = bodyPart.x;
-//                            lastY = bodyPart.y;
-//                        }
-//                    }
-//
-//                    Path2D.Double snakePath = new Path2D.Double();
-//                    snakePath.moveTo(snake.x, snake.y);
-//
-//                    lastX = snake.x;
-//                    lastY = snake.y;
-//
-//                    for (SnakeBody bodyPart : snake.body) {
-//                        double partLength = Math.sqrt((bodyPart.x - lastX) * (bodyPart.x - lastX) + (bodyPart.y - lastY) * (bodyPart.y - lastY));
-//                        if (partLength > totalLength) {
-//                            snakePath.lineTo(lastX + (totalLength / partLength) * (bodyPart.x - lastX), lastY + (totalLength / partLength) * (bodyPart.y - lastY));
-//                            break;
-//                        }
-//                        snakePath.lineTo(bodyPart.x, bodyPart.y);
-//                        totalLength -= partLength;
-//                        lastX = bodyPart.x;
-//                        lastY = bodyPart.y;
-//                    }
-//
-//                    g.draw(snakePath);
-//                }
-//
-//                if (snake.isBoosting()) {
-//                    g.setPaint(new RadialGradientPaint((float) (snake.x - 0.5 / scale), (float) (snake.y - 0.5 / scale),
-//                            (float) (thickness * 4 / 3), SNAKE_HALO_FRACTIONS,
-//                            snake == model.snake ? OWN_SNAKE_HALO_COLORS : SNAKE_HALO_COLORS));
-//                    g.fillRect((int) Math.round(snake.x - thickness * 3 / 2 - 1), (int) Math.round(snake.y - thickness * 3 / 2 - 1), (int) (thickness * 3 + 2), (int) (thickness * 3 + 2));
-//                }
-//                g.setColor(snake == model.snake ? OWN_SNAKE_COLOR : SNAKE_COLOR);
-//                g.fill(new Ellipse2D.Double(snake.x - thickness * 2 / 3, snake.y - thickness * 2 / 3, thickness * 4 / 3, thickness * 4 / 3));
-//
-//                String lengthText = String.valueOf(model.getSnakeLength(snake.body.size(), snake.getFood()));
-//
-//                g.setColor(NAME_SHADOW_COLOR);
-//                g.drawString(snake.name,
-//                        (float) (snake.x - g.getFontMetrics().stringWidth(snake.name) / 2.0 + g.getFontMetrics().getHeight() / 12.0),
-//                        (float) (snake.y - thickness * 2 / 3 - g.getFontMetrics().getHeight() + g.getFontMetrics().getHeight() / 12.0));
-//                g.drawString(lengthText,
-//                        (float) (snake.x - g.getFontMetrics().stringWidth(lengthText) / 2.0 + g.getFontMetrics().getHeight() / 12.0),
-//                        (float) (snake.y - thickness * 2 / 3 + g.getFontMetrics().getHeight() / 12.0));
-//
-//                g.setColor(FOREGROUND_COLOR);
-//                g.drawString(snake.name, (float) (snake.x - g.getFontMetrics().stringWidth(snake.name) / 2.0), (float) (snake.y - thickness * 2 / 3 - g.getFontMetrics().getHeight()));
-//                g.drawString(lengthText, (float) (snake.x - g.getFontMetrics().stringWidth(lengthText) / 2.0), (float) (snake.y - thickness * 2 / 3));
-//            });
-//
-//            g.setTransform(oldTransform);
-//            g.setStroke(new BasicStroke(1));
-//            g.setColor(MAP_COLOR);
-//            g.drawOval(w - 80, h - 80, 79, 79);
-//            // Restore the original stroke and transform for further drawing
-//            g.setStroke(originalStroke);
-//            g.setTransform(originalTransform);
-//            boolean[] currentMap = map;
-//            if (currentMap != null) {
-//                for (int i = 0; i < currentMap.length; i++) {
-//                    if (currentMap[i]) {
-//                        g.fillRect((i % 80) + w - 80, (i / 80) + h - 80, 1, 1);
-//                    }
-//                }
-//            }
-//            if (zoom != 0 && model.snake != null) {
-//                double zoomScale = Math.pow(1.25, zoom + 1);
-//                g.setColor(MAP_POSITION_COLOR);
-////                oldStroke = g.getStroke();
-//                g.setStroke(new BasicStroke(2));
-//                g.draw(new Rectangle2D.Double(
-//                        model.snake.x * 80 / (model.worldBoundaryRadius * 2) - w / zoomScale / m * 40 + w - 80,
-//                        model.snake.y * 80 / (model.worldBoundaryRadius * 2) - h / zoomScale / m * 40 + h - 80,
-//                        w / zoomScale / m * 80,
-//                        h / zoomScale / m * 80
-//                ));
-////                g.setStroke(oldStroke);
-//            }
-//
-//        }
-//        // At the end of the method, reset the graphics context to its original state
-//        g.setStroke(originalStroke);
-//        g.setTransform(originalTransform);
-//
-//        g.setFont(DEBUG_FONT);
-//        g.setColor(FOREGROUND_COLOR);
-//        long newFrameTime = System.currentTimeMillis();
-//        if (newFrameTime > lastFrameTime) {
-//            fps = 0.95 * fps + 0.05 * 1000.0 / (newFrameTime - lastFrameTime);
-//        }
-//        g.drawString("FPS: " + Math.round(fps), 0, g.getFontMetrics().getAscent());
-//        lastFrameTime = newFrameTime;
-//    }
-
-
-
     //test
     @Override
 
@@ -425,6 +197,9 @@ public class SlitherCanvas extends JPanel { // JPanel est une classe de Swing
         // Draw UI elements like FPS counter, etc.
         drawUIElements(g);
 
+        // Draw the minimap
+        drawMinimap(g);
+
         // Store the time of the last repaint for FPS calculation
         storeLastRepaintTime();
     }
@@ -461,24 +236,37 @@ public class SlitherCanvas extends JPanel { // JPanel est une classe de Swing
 
 
     private void applyGameWorldTransform(Graphics2D g, int m) {
-        double viewScale;
+        // Here we are getting the actual width and height of the canvas
+        int w = getWidth();
+        int h = getHeight();
+
+        // The viewScale should increase as the zoom level increases, making the view closer.
+        // If zoom is a level with 0 being default, 1 being zoomed in once, etc., you can use:
+        viewScale = Math.pow(1.25, zoom) * m / (worldBoundaryRadius * 2);
+
         double translateX;
         double translateY;
 
-        if (model.snake == null) {
-            viewScale = 1d * m / (model.worldBoundaryRadius * 2);
-            translateX = m / 2.0;
-            translateY = m / 2.0;
+        // Centering the view on the player's snake
+        if (model.snake != null) {
+            translateX = w / 2.0 - viewScale * model.snake.x;
+            translateY = h / 2.0 - viewScale * model.snake.y;
         } else {
-            viewScale = Math.pow(1.25, zoom) * m / (model.worldBoundaryRadius * 2);
-            translateX = m / 2.0 - viewScale * model.snake.x;
-            translateY = m / 2.0 - viewScale * model.snake.y;
+            // If for some reason the player's snake doesn't exist, center the view on the world origin
+            translateX = w / 2.0;
+            translateY = h / 2.0;
         }
 
+        // Apply the transformations
         AffineTransform transform = AffineTransform.getTranslateInstance(translateX, translateY);
         transform.scale(viewScale, viewScale);
         g.setTransform(transform);
     }
+
+
+
+
+
 
     private void drawGameElements(Graphics2D g) {
         // Assuming you have methods like drawSnake, drawFoods, drawPreys, etc.
@@ -546,7 +334,7 @@ public class SlitherCanvas extends JPanel { // JPanel est une classe de Swing
             String name = snake.name;
             String lengthText = String.valueOf(model.getSnakeLength(snake.body.size(), snake.getFood()));
             g.setFont(NAME_FONT);
-            g.setColor(NAME_SHADOW_COLOR);
+            g.setColor(Color.WHITE);
             g.drawString(name, (float) (snake.x - g.getFontMetrics().stringWidth(name) / 2.0),
                     (float) (snake.y - thickness * 2 / 3 - g.getFontMetrics().getHeight()));
             g.drawString(lengthText, (float) (snake.x - g.getFontMetrics().stringWidth(lengthText) / 2.0),
@@ -590,18 +378,52 @@ public class SlitherCanvas extends JPanel { // JPanel est une classe de Swing
     }
 
     private void drawMinimap(Graphics2D g) {
+        int minimapSize = 80; // The size of the minimap
         int w = getWidth();
         int h = getHeight();
-        double minimapScale = 80.0 / (model.worldBoundaryRadius * 2);
-        int minimapX = (int) (model.snake.x * minimapScale) + w - 80;
-        int minimapY = (int) (model.snake.y * minimapScale) + h - 80;
+        int minimapX = w - minimapSize; // Position at the bottom right corner
+        int minimapY = h - minimapSize;
 
+
+
+        // Draw the minimap background
         g.setColor(MAP_COLOR);
-        g.fillRect(w - 80, h - 80, 80, 80);  // Minimap background
+        g.fillRect(minimapX, minimapY, minimapSize, minimapSize);
 
-        g.setColor(MAP_POSITION_COLOR);
-        g.fillOval(minimapX - 2, minimapY - 2, 4, 4);  // Player's position on the minimap
+        // Calculate the scale of the minimap relative to the entire game world
+        double minimapScale = (double) minimapSize / (model.worldBoundaryRadius * 2);
+
+        // Draw all food on the minimap
+        for (Food food : model.activefoods.values()) {
+            // Calculate the food's position on the minimap
+            // Make sure food's position is clamped within the world boundaries before scaling
+            double foodMinimapX = Math.min(Math.max(food.x, -model.worldBoundaryRadius), model.worldBoundaryRadius);
+            double foodMinimapY = Math.min(Math.max(food.y, -model.worldBoundaryRadius), model.worldBoundaryRadius);
+
+            foodMinimapX = (foodMinimapX + model.worldBoundaryRadius) * minimapScale + minimapX;
+            foodMinimapY = (foodMinimapY + model.worldBoundaryRadius) * minimapScale + minimapY;
+
+            g.setColor(FOOD_COLOR); // Use the food's color
+            g.fillRect((int) foodMinimapX, (int) foodMinimapY, 2, 2); // Represent the food as a small dot
+        }
+
+        // Draw the minimap border cube (visible area)
+        if (model.snake != null) {
+            // Calculate the top-left corner of the visible area on the minimap
+            int visibleAreaMinimapX = (int) ((model.snake.x - w / 2.0 / viewScale + model.worldBoundaryRadius) * minimapScale) + minimapX;
+            int visibleAreaMinimapY = (int) ((model.snake.y - h / 2.0 / viewScale + model.worldBoundaryRadius) * minimapScale) + minimapY;
+
+            // Calculate the width and height of the visible area on the minimap
+            int visibleAreaMinimapWidth = (int) (w / viewScale * minimapScale);
+            int visibleAreaMinimapHeight = (int) (h / viewScale * minimapScale);
+
+            g.setColor(MAP_POSITION_COLOR);
+            g.drawRect(visibleAreaMinimapX, visibleAreaMinimapY, visibleAreaMinimapWidth, visibleAreaMinimapHeight);
+        }
     }
+
+
+
 
     public void setModel(SlitherModel model) {
         this.model = model;

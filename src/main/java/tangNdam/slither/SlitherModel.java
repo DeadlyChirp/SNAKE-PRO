@@ -205,36 +205,61 @@ class SlitherModel {
         }
 
         //check le mur du jeu et wrap around si besoin
-            for (Snake snake : activesnakes.values()) {
-                double distanceFromCenter = Math.sqrt(snake.x * snake.x + snake.y * snake.y);
-                if (distanceFromCenter > worldBoundaryRadius) {
-                    // Find the angle from the center of the world to the snake's head
-                    double angleFromCenter = Math.atan2(snake.y, snake.x);
-                    // Place the snake's head on the boundary at this angle but on the opposite side of the circle
-                    snake.x = Math.cos(angleFromCenter) * worldBoundaryRadius * -1;
-                    snake.y = Math.sin(angleFromCenter) * worldBoundaryRadius * -1;
-                }
-            }
+//            for (Snake snake : activesnakes.values()) {
+//                double headX = snake.x;
+//                double headY = snake.y;
+//
+//                // Wrap around logic
+//                if (headX < -worldBoundaryRadius) {
+//                    snake.x = worldBoundaryRadius;
+//                } else if (headX > worldBoundaryRadius) {
+//                    snake.x = -worldBoundaryRadius;
+//                }
+//
+//                if (headY < -worldBoundaryRadius) {
+//                    snake.y = worldBoundaryRadius;
+//                } else if (headY > worldBoundaryRadius) {
+//                    snake.y = -worldBoundaryRadius;
+//                }
+//            }
 
 
 //terrain sans bords :
+//            for (Snake snake : activesnakes.values()) {
+//                double headX = snake.x;
+//                double headY = snake.y;
+//
+//                // Check boundaries and wrap around if necessary
+//                if (headX < -worldBoundaryRadius) {
+//                    snake.x = worldBoundaryRadius - (headX % worldBoundaryRadius);
+//                } else if (headX > worldBoundaryRadius) {
+//                    snake.x = -worldBoundaryRadius + (headX % worldBoundaryRadius);
+//                }
+//
+//                if (headY < -worldBoundaryRadius) {
+//                    snake.y = worldBoundaryRadius - (headY % worldBoundaryRadius);
+//                } else if (headY > worldBoundaryRadius) {
+//                    snake.y = -worldBoundaryRadius + (headY % worldBoundaryRadius);
+//                }
+//            }
+
             for (Snake snake : activesnakes.values()) {
                 double headX = snake.x;
                 double headY = snake.y;
+                double distanceFromCenter = Math.sqrt(headX * headX + headY * headY);
+                double visualBoundaryRadius = this.worldBoundaryRadius; // This should be the drawn boundary radius.
 
-                // Check boundaries and wrap around if necessary
-                if (headX < -worldBoundaryRadius) {
-                    snake.x = worldBoundaryRadius - (headX % worldBoundaryRadius);
-                } else if (headX > worldBoundaryRadius) {
-                    snake.x = -worldBoundaryRadius + (headX % worldBoundaryRadius);
-                }
+                // If the snake's head is outside or exactly on the boundary, place it just inside.
+                if (distanceFromCenter >= visualBoundaryRadius) {
+                    double angleFromCenter = Math.atan2(headY, headX);
+                    double snakeHeadRadius = snake.getHeadRadius();
+                    double boundaryInset = visualBoundaryRadius - snakeHeadRadius - 1; // Subtract an extra pixel to ensure it's inside.
 
-                if (headY < -worldBoundaryRadius) {
-                    snake.y = worldBoundaryRadius - (headY % worldBoundaryRadius);
-                } else if (headY > worldBoundaryRadius) {
-                    snake.y = -worldBoundaryRadius + (headY % worldBoundaryRadius);
+                    snake.x = Math.cos(angleFromCenter) * boundaryInset;
+                    snake.y = Math.sin(angleFromCenter) * boundaryInset;
                 }
             }
+
             checkFoodCollisions();
     } catch (Exception e) {
         e.printStackTrace(); // This will print any exceptions to the console
@@ -311,15 +336,12 @@ class SlitherModel {
 
     void addFood(int x, int y, double size, boolean fastSpawn) {
         synchronized (view != null ? view.modelLock : new Object()) {
-            // Calculate the distance from the center
             double distanceFromCenter = Math.sqrt(x * x + y * y);
-            // Check if the position is within the world boundary radius
             if (distanceFromCenter <= worldBoundaryRadius) {
-                activefoods.put(y * worldBoundaryRadius * 3 + x, new Food(x, y, size, fastSpawn));
+                activefoods.put(activefoods.size() + 1, new Food(x, y, size, fastSpawn));
             }
         }
     }
-
 
 
 
@@ -370,11 +392,11 @@ class SlitherModel {
         System.out.println("Snake initialized");
         // Add initial food
         Random rand = new Random();
-        for (int i = 0; i < 100; i++) {
-            int angle = rand.nextInt(360);
+        for (int i = 0; i < 200; i++) {
+            double angle = rand.nextDouble() * Math.PI * 2;
             double radius = rand.nextDouble() * worldBoundaryRadius;
-            int x = (int) (Math.cos(Math.toRadians(angle)) * radius);
-            int y = (int) (Math.sin(Math.toRadians(angle)) * radius);
+            int x = (int) (Math.cos(angle) * radius);
+            int y = (int) (Math.sin(angle) * radius);
             addFood(x, y, 1, false);
         }
 

@@ -1,4 +1,4 @@
-package snek.resources.snek;
+package snek.rsrc.snek;
 
 import javax.swing.JFrame;
 

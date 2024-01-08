@@ -192,8 +192,4 @@ public class Snake {
             this.speed = getBasespeed();
         }
     }
-
-
-
-
 }

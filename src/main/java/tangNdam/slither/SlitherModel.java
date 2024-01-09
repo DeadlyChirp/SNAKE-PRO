@@ -42,10 +42,6 @@ class SlitherModel {
     public static final int DEFAULT_MAX_SIZE_FOR_SPEED_CALCULATION = 100;
 
 
-    private long lastFrameTime; // Field to store the time of the last frame
-
-
-
     public SlitherModel(SlitherJFrame view) {
         this(DEFAULT_WORLD_BOUNDARY_RADIUS, DEFAULT_WORLD_SECTOR_SIZE,
                 DEFAULT_SPEED_ANGLE_DIV, DEFAULT_SPEED_CALC_BASE, DEFAULT_SPEED_CAL_FACTOR,
@@ -66,7 +62,8 @@ class SlitherModel {
         this.preyAngularVelocityFactor = preyAngularVelocityFactor;
         this.maxSizeForSpeedCalculation = maxSizeForSpeedCalculation;
         this.view = view;
-        lastFrameTime = System.currentTimeMillis();
+        // Field to store the time of the last frame
+        long lastFrameTime = System.currentTimeMillis();
 
         sectors = new boolean[worldBoundaryRadius * 2 / worldsectorSize][worldBoundaryRadius * 2 / worldsectorSize];
 

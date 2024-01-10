@@ -7,6 +7,8 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 
 public class PlayMenu extends JFrame {
 
@@ -48,16 +50,22 @@ public class PlayMenu extends JFrame {
 
     class PlayPanel extends JPanel {
         private Dimension screenSize;
-        private BufferedImage leftGameImage;
-        private BufferedImage rightGameImage;
         private BufferedImage background;
+        private Font gameFont;
         public PlayPanel(BufferedImage leftImage, BufferedImage rightImage, BufferedImage background) {
-            this.leftGameImage = leftImage;
-            this.rightGameImage = rightImage;
             this.background = background;
 
             this.setLayout(null); // Set the layout to null for absolute positioning
             screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+
+            try {
+                gameFont = Font.createFont(Font.TRUETYPE_FONT, new File("src/main/java/tangNdam/slither/images/PressStart2P-Regular.ttf")).deriveFont(30f);
+                GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+                ge.registerFont(gameFont);
+            } catch (IOException | FontFormatException e) {
+                e.printStackTrace(); // It's better to print the stack trace to see the error during development
+                gameFont = new Font("SansSerif", Font.BOLD, 24); // Fallback font in case the custom font fails to load
+            }
 
             // Create left and right panels
             // Assuming you want to use the full size of the images
@@ -77,11 +85,33 @@ public class PlayMenu extends JFrame {
             leftPanel.setClickAction(this::startSnakeGame);
             rightPanel.setClickAction(this::startSlitherGame);
 
+            // Add the game title labels
+            JLabel snakeClassicLabel = createGameLabel("Snake Classic", gameFont);
+            JLabel futurSnakeLabel = createGameLabel("Futur Snake", gameFont);
+
+            // Add the labels directly to the PlayPanel, not the ImagePanel
+            this.add(snakeClassicLabel);
+            this.add(futurSnakeLabel);
+
+            // Set bounds for the labels. Adjust these values as needed.
+            int labelYOffset = leftImage.getHeight() + 10; // adjust this to position the label correctly
+            snakeClassicLabel.setBounds(centerLeftX, centerY + labelYOffset, leftImage.getWidth(), 30);
+            futurSnakeLabel.setBounds(centerRightX, centerY + labelYOffset, rightImage.getWidth(), 30);
 
             // Add the panels to the layout
             this.add(leftPanel);
             this.add(rightPanel);
         }
+
+        private JLabel createGameLabel(String text, Font font) {
+            JLabel label = new JLabel(text, SwingConstants.CENTER);
+            label.setFont(font);
+            label.setForeground(Color.ORANGE);
+            label.setSize(new Dimension(screenSize.width / 2, 30)); // Set a fixed size for the label
+            label.setHorizontalAlignment(SwingConstants.CENTER); // Make sure the text is centered
+            return label;
+        }
+
 
         private void startSnakeGame() {
             // Close the current window
@@ -117,7 +147,6 @@ public class PlayMenu extends JFrame {
     static class ImagePanel extends JPanel {
         private BufferedImage image;
 
-
         public ImagePanel(BufferedImage image) {
             this.image = image;
             this.setOpaque(false);
@@ -140,4 +169,5 @@ public class PlayMenu extends JFrame {
             });
         }
     }
+
 }

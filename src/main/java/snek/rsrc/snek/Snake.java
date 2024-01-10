@@ -21,14 +21,6 @@ public class Snake extends JFrame {
         setLocationRelativeTo(null); // Center the window
         setVisible(true); // Make the frame visible
     }
-    public static void main(String[] args) {
-        // Create an instance of the Snake game in the Event Dispatch Thread
-        javax.swing.SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                Snake snake = new Snake();
-                snake.setVisible(true);
-            }
-        });
-    }
+
 }
 

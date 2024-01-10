@@ -99,6 +99,16 @@ class SlitherModel {
                 this.snake.updateBoostState(deltaTime);
             }
 
+            //bot snake
+            for (Snake snake : activesnakes.values()) {
+                if (snake instanceof BotSnake) {
+                    ((BotSnake) snake).update(deltaTime); // Update bot snake
+                } else {
+                    snake.update(deltaTime); // Update regular snake
+                }
+            }
+
+
             activesnakes.values().forEach(cSnake -> {
 
                 double snakeDeltaAngle = angularVelocityFactor * deltaTime * cSnake.getTurnRadiusFactor() * cSnake.getSpeedTurnFactor();
@@ -240,6 +250,9 @@ class SlitherModel {
 //                }
 //            }
 
+
+
+
             for (Snake snake : activesnakes.values()) {
                 double headX = snake.x;
                 double headY = snake.y;
@@ -263,15 +276,36 @@ class SlitherModel {
     }
     }
 
-    void addSnake(int snakeID, String name, double x, double y, double wantedAngle, double actualangle, double speed, double foodAmount, Deque<SnakeBody> body) {
+    public void addSnake(int snakeID, String name, double x, double y, double wantedAngle, double actualangle, double speed, double foodAmount, Deque<SnakeBody> body, Player player) {
         synchronized (view != null ? view.modelLock : new Object()) {
-            Snake newSnake = new Snake(snakeID, name, x, y, wantedAngle, actualangle, speed, foodAmount, body, this);
+            Snake newSnake = new Snake(snakeID, name, x, y, wantedAngle, actualangle, speed, foodAmount, body, this, player);
             if (snake == null) {
                 snake = newSnake;
             }
             activesnakes.put(snakeID, newSnake);
         }
     }
+
+
+    //BOT
+    public void addBotSnakes(int numberOfBots) {
+        Random rand = new Random();
+        for (int i = 0; i < numberOfBots; i++) {
+            double x = (double) (rand.nextInt(worldBoundaryRadius * 2) - worldBoundaryRadius);
+            double y = (double) (rand.nextInt(worldBoundaryRadius * 2) - worldBoundaryRadius);
+            double angle = rand.nextDouble() * 2 * Math.PI;
+            Deque<SnakeBody> body = new ArrayDeque<>();
+            for (int j = 0; j < 10; j++) {
+                body.add(new SnakeBody(x, y));
+            }
+            BotSnake bot = new BotSnake(i, "Bot" + i, x, y, angle, angle, 4.0, 0.0, body, this, null);
+            activesnakes.put(bot.id, bot);
+        }
+    }
+
+
+
+
 
     void checkFoodCollisions() {
         Snake snake = this.snake;
@@ -358,12 +392,12 @@ class SlitherModel {
     }
 
     public void updatePlayerPosition(Snake player, Double angle, Boolean boost) {
-        // on assume que le joueur est un serpent
         if (snake != null) {
             snake.setDirection(angle);
             snake.setBoosting(boost);
         }
     }
+
 
     // In SlitherModel class
     public int getWorldBoundaryRadius() {
@@ -382,10 +416,19 @@ class SlitherModel {
     public void initializeGameState() {
         // Set up the initial state of the game, like adding snakes, food, and prey
         Deque<SnakeBody> snakeBodyQueue = new ArrayDeque<SnakeBody>();
-// populate snakeBodyQueue with SnakeBody objects as needed
-        int centerX = worldBoundaryRadius / 2;
-        int centerY = worldBoundaryRadius / 2;
-        addSnake(1, "Player", centerX, centerY, 0, 0, 4.0, 0, snakeBodyQueue);
+ // Initialization values for the player snake
+        double playerStartX = (double) worldBoundaryRadius / 2; // Center X
+        double playerStartY = (double) worldBoundaryRadius / 2; // Center Y
+        double playerStartAngle = 0; // Initial angle
+        double playerStartSpeed = 5.0; // Initial speed
+        double playerStartFood = 0; // Initial food amount
+
+        PlayerKeyboard playerKeyboard = new PlayerKeyboard("Player1");
+        Deque<SnakeBody> playerBody = new ArrayDeque<>();
+        // ... add body parts to playerBody as necessary ...
+        addSnake(1, playerKeyboard.name, playerStartX, playerStartY, playerStartAngle, playerStartAngle, playerStartSpeed, playerStartFood, playerBody, playerKeyboard);
+
+
         System.out.println("Snake initialized");
         // Add initial food
         Random rand = new Random();
@@ -408,5 +451,8 @@ class SlitherModel {
                 addSector(i, j); // Activate all sectors for simplicity
             }
         }
+
+        //ADD bot
+        addBotSnakes(5);
     }
 }

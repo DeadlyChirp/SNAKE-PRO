@@ -44,8 +44,7 @@ public class GameMenu extends JFrame {
         private JPanel quitButton;
         private BufferedImage backgroundImage;
         private Font customFont; // Custom font variable
-        private CardLayout cardLayout = new CardLayout(); // CardLayout to manage the content panels
-        private JPanel cardsPanel;
+        private Icon arrowIcon;
 
         public MainMenuPanel() {
             // Load the custom font
@@ -61,9 +60,6 @@ public class GameMenu extends JFrame {
 
             backgroundImage = loadImage("src/main/java/tangNdam/slither/images/lastbg.png");
             setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-
-
-
 
             playButton = createButton("Play");
             optionsButton = createButton("Options");
@@ -123,15 +119,31 @@ public class GameMenu extends JFrame {
             int height = Math.max(buttonSize.height, arrowSize.height);
             buttonPanel.setMaximumSize(new Dimension(width, height));
 
-            if ("Play".equals(text)) {
-                button.addActionListener(e -> new PlayMenu()); // This will display the Play window when clicked
-            } else if ("Credits".equals(text)) {
-                button.addActionListener(e -> new CreditsDisplay()); // This will display the Credits window when clicked
-            } else if ("Quit".equals(text)) {
-                button.addActionListener(e -> System.exit(0)); // This will exit the application when clicked
-            } else if ("Options".equals(text)) {
-                button.addActionListener(e -> new OptionsDisplay()); // This will display the Options window when clicked
-            }
+            button.addActionListener(e -> {
+                JFrame newWindow = null;
+                if ("Play".equals(text)) {
+                    JFrame playMenu = new PlayMenu();
+                    playMenu.setExtendedState(JFrame.MAXIMIZED_BOTH);
+                    playMenu.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                    playMenu.setVisible(true);
+                    GameMenu.this.dispose();// Assuming PlayMenu is a JFrame
+                } else if ("Credits".equals(text)) {
+                    newWindow = new JFrame(); // Assuming CreditsDisplay is a JFrame
+                } else if ("Options".equals(text)) {
+                    newWindow = new JFrame(); // Assuming OptionsDisplay is a JFrame
+                } else if ("Quit".equals(text)) {
+                    System.exit(0); // Exit the application
+                    return;
+                }
+
+                // If a new window is created, show it and dispose of the current GameMenu
+                if (newWindow != null) {
+                    newWindow.setVisible(true);
+                    newWindow.setSize(800, 600); // Set the size of the new window or pack it
+                    newWindow.setLocationRelativeTo(null); // Center it
+                    GameMenu.this.dispose(); // Dispose the current GameMenu
+                }
+            });
 
             // Add focus listener to the button to show/hide the arrows
             button.addFocusListener(new FocusAdapter() {

@@ -79,22 +79,22 @@ public class Board extends JPanel implements ActionListener {
     }
 
     private void loadImages() {
-        ImageIcon iid = new ImageIcon(new ImageIcon("src/main/java/snek/resources/snekbody.png").getImage().getScaledInstance(DOT_SIZE, DOT_SIZE, Image.SCALE_SMOOTH));
+        ImageIcon iid = new ImageIcon(new ImageIcon("src/main/java/snek/rsrc/snekbody.png").getImage().getScaledInstance(DOT_SIZE, DOT_SIZE, Image.SCALE_SMOOTH));
         ball = iid.getImage();
 
-        ImageIcon iia = new ImageIcon(new ImageIcon("src/main/java/snek/resources/food.png").getImage().getScaledInstance(DOT_SIZE, DOT_SIZE, Image.SCALE_SMOOTH));
+        ImageIcon iia = new ImageIcon(new ImageIcon("src/main/java/snek/rsrc/food.png").getImage().getScaledInstance(DOT_SIZE, DOT_SIZE, Image.SCALE_SMOOTH));
         apple = iia.getImage();
 
-        ImageIcon iihU = new ImageIcon("src/main/java/snek/resources/head_up.png");
+        ImageIcon iihU = new ImageIcon("src/main/java/snek/rsrc/head_up.png");
         headUp = iihU.getImage().getScaledInstance(DOT_SIZE, DOT_SIZE, Image.SCALE_SMOOTH);
 
-        ImageIcon iihD = new ImageIcon("src/main/java/snek/resources/head_down.png");
+        ImageIcon iihD = new ImageIcon("src/main/java/snek/rsrc/head_down.png");
         headDown = iihD.getImage().getScaledInstance(DOT_SIZE, DOT_SIZE, Image.SCALE_SMOOTH);
 
-        ImageIcon iihL = new ImageIcon("src/main/java/snek/resources/head_left.png");
+        ImageIcon iihL = new ImageIcon("src/main/java/snek/rsrc/head_left.png");
         headLeft = iihL.getImage().getScaledInstance(DOT_SIZE, DOT_SIZE, Image.SCALE_SMOOTH);
 
-        ImageIcon iihR = new ImageIcon("src/main/java/snek/resources/head_right.png");
+        ImageIcon iihR = new ImageIcon("src/main/java/snek/rsrc/head_right.png");
         headRight = iihR.getImage().getScaledInstance(DOT_SIZE, DOT_SIZE, Image.SCALE_SMOOTH);
     }
 

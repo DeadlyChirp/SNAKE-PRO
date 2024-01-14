@@ -1,7 +1,9 @@
 package tangNdam.slither;
 
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionAdapter;
 
 import java.awt.geom.*;
 import javax.swing.*;
@@ -51,7 +53,7 @@ public class SlitherCanvas extends JPanel { // JPanel est une classe de Swing
 
     private double viewScale; // add this as a member variable
 
-    private PlayerKeyboard playerKeyboard = new PlayerKeyboard("Player 1");
+
 
     // Constructor
     // Constructor
@@ -90,20 +92,6 @@ public class SlitherCanvas extends JPanel { // JPanel est une classe de Swing
                 }
             }
         });
-        // Add key listener to handle key events
-        addKeyListener(new KeyAdapter() {
-            @Override
-            public void keyPressed(KeyEvent e) {
-                playerKeyboard.keyPressed(e.getKeyCode());
-            }
-
-            @Override
-            public void keyReleased(KeyEvent e) {
-                playerKeyboard.keyReleased(e.getKeyCode());
-            }
-        });
-        setFocusable(true); // This component can now receive keyboard input
-        requestFocusInWindow(); // Request focus to receive key input
     }
 
     public void stopRepaintTimer() {
@@ -192,9 +180,8 @@ public class SlitherCanvas extends JPanel { // JPanel est une classe de Swing
         Stroke originalStroke = g.getStroke();
         AffineTransform originalTransform = g.getTransform();
 
-        if (model != null && model.snake != null) {
-            applyGameWorldTransform(g, model.snake);
-        }
+        // Apply transform for game elements like snake, food, etc.
+        applyGameWorldTransform(g, m);
 
         // Now draw the game elements like snake, food, and preys with the transformed graphics object
         drawGameElements(g);
@@ -241,22 +228,33 @@ public class SlitherCanvas extends JPanel { // JPanel est une classe de Swing
     }
 
 
-    private void applyGameWorldTransform(Graphics2D g, Snake playerSnake) {
+    private void applyGameWorldTransform(Graphics2D g, int m) {
+        // Here we are getting the actual width and height of the canvas
         int w = getWidth();
         int h = getHeight();
-        double scale = Math.max(playerSnake.getScale(), 1.0); // Assuming getScale() gives a zoom level based on snake size or desired zoom
 
-        double translateX = w / 2.0 - scale * playerSnake.x;
-        double translateY = h / 2.0 - scale * playerSnake.y;
+        // The viewScale should increase as the zoom level increases, making the view closer.
+        // If zoom is a level with 0 being default, 1 being zoomed in once, etc., you can use:
+        viewScale = Math.pow(1.25, zoom) * m / (worldBoundaryRadius * 2);
+
+        double translateX;
+        double translateY;
+
+        // Centering the view on the player's snake
+        if (model.snake != null) {
+            translateX = w / 2.0 - viewScale * model.snake.x;
+            translateY = h / 2.0 - viewScale * model.snake.y;
+        } else {
+            // If for some reason the player's snake doesn't exist, center the view on the world origin
+            translateX = w / 2.0;
+            translateY = h / 2.0;
+        }
 
         // Apply the transformations
         AffineTransform transform = AffineTransform.getTranslateInstance(translateX, translateY);
-        transform.scale(scale, scale);
+        transform.scale(viewScale, viewScale);
         g.setTransform(transform);
     }
-
-
-
 
 
 
@@ -396,19 +394,6 @@ public class SlitherCanvas extends JPanel { // JPanel est une classe de Swing
             if (isWithinCircle(foodMinimapX, foodMinimapY, minimapSize / 2)) {
                 g.setColor(FOOD_COLOR);
                 g.fillRect((int) (minimapX + foodMinimapX - 1), (int) (minimapY + foodMinimapY - 1), 2, 2); // Draw food as small dots
-            }
-        }
-
-
-        //draw bot
-        for (Snake snake : model.activesnakes.values()) {
-            Color snakeColor = (snake instanceof BotSnake) ? Color.RED : new Color(0, 255, 0); // RED for bots, GREEN for player
-            double snakeMinimapX = (snake.x + model.worldBoundaryRadius) * minimapScale;
-            double snakeMinimapY = (snake.y + model.worldBoundaryRadius) * minimapScale;
-
-            if (isWithinCircle(snakeMinimapX, snakeMinimapY, minimapSize / 2)) {
-                g.setColor(snakeColor);
-                g.fillRect((int) (minimapX + snakeMinimapX - 2), (int) (minimapY + snakeMinimapY - 2), 4, 4); // Draw the snake's position larger
             }
         }
 

@@ -35,10 +35,7 @@ public class Snake {
     private boolean boosting;
     public static final double MAX_SCALE = 10.0;
 
-    private Player player;
-
-
-    Snake(int id, String name, double x, double y, double wantedAngle, double actualAngle, double speed, double foodAmount, Deque<SnakeBody> body, SlitherModel gamemodel,Player player)  {
+    Snake(int id, String name, double x, double y, double wantedAngle, double actualAngle, double speed, double foodAmount, Deque<SnakeBody> body, SlitherModel gamemodel)  {
         this.id = id;
         this.name = name;
         this.x = x;
@@ -51,7 +48,6 @@ public class Snake {
         this.foodAmount = foodAmount; //quantite de nourriture mangee. Utiliser pour calculer la croissance du serpent
         this.body = body; //represente differentes parties du corps du serpent, chaque segment est un element de la deque
         this.gamemodel = gamemodel;
-        this.player = player;
 
     }
 
@@ -93,10 +89,6 @@ public class Snake {
     void setFood(double food) { //sert a modifier la quantite de nourriture mangee
 
         this.foodAmount = food;
-    }
-
-    public double getWantedAngle() {
-        return this.wantedAngle;
     }
 
     public double getHeadRadius() {
@@ -141,11 +133,6 @@ public class Snake {
             // Update previous segment position
             prevX = bodyPart.x;
             prevY = bodyPart.y;
-        }
-        if (player != null) {
-            Player.Wish wish = player.action(gamemodel);
-            setDirection(wish.angle);
-            setBoosting(wish.boost);
         }
 
 

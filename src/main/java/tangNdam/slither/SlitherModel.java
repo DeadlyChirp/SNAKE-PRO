@@ -85,227 +85,168 @@ class SlitherModel {
 
     void update() {
         try {
-        synchronized (view != null ? view.modelLock : new Object()){
-            long newTime = System.currentTimeMillis();
-            double deltaTime = (newTime - lastUpdateTime) / 100.0; // Convert to seconds
-            lastUpdateTime = newTime;
+            synchronized (view != null ? view.modelLock : new Object()){
+                long newTime = System.currentTimeMillis();
+                double deltaTime = (newTime - lastUpdateTime) / 100.0; // Convert to seconds
+                lastUpdateTime = newTime;
 
-            for (Snake snake : activesnakes.values()) {
-                snake.update(deltaTime); // Update each snake
-            }
+                for (Snake snake : activesnakes.values()) {
+                    snake.update(deltaTime); // Update each snake
 
-            //boost pour snake
-            if (this.snake != null) {
-                this.snake.updateBoostState(deltaTime);
-            }
+                    // Wrap-around logic
+                    if (snake.x < -worldBoundaryRadius) {
+                        snake.x += worldBoundaryRadius * 2;
+                    } else if (snake.x > worldBoundaryRadius) {
+                        snake.x -= worldBoundaryRadius * 2;
+                    }
 
-            //bot snake
-            for (Snake snake : activesnakes.values()) {
-                if (snake instanceof BotSnake) {
-                    ((BotSnake) snake).update(deltaTime); // Update bot snake
-                } else {
-                    snake.update(deltaTime); // Update regular snake
+                    if (snake.y < -worldBoundaryRadius) {
+                        snake.y += worldBoundaryRadius * 2;
+                    } else if (snake.y > worldBoundaryRadius) {
+                        snake.y -= worldBoundaryRadius * 2;
+                    }
                 }
-            }
 
-
-            activesnakes.values().forEach(cSnake -> {
-
-                double snakeDeltaAngle = angularVelocityFactor * deltaTime * cSnake.getTurnRadiusFactor() * cSnake.getSpeedTurnFactor();
-                double snakeDistance = cSnake.speed * deltaTime / 4.0;
-                if (snakeDistance > 42) {
-                    snakeDistance = 42;
+                //boost pour snake
+                if (this.snake != null) {
+                    this.snake.updateBoostState(deltaTime);
                 }
+
+                activesnakes.values().forEach(cSnake -> {
+
+                    double snakeDeltaAngle = angularVelocityFactor * deltaTime * cSnake.getTurnRadiusFactor() * cSnake.getSpeedTurnFactor();
+                    double snakeDistance = cSnake.speed * deltaTime / 4.0;
+                    if (snakeDistance > 42) {
+                        snakeDistance = 42;
+                    }
 //                System.out.println("Snake updated");
-                if (cSnake.targetspeed != cSnake.speed) {
-                    if (cSnake.targetspeed < cSnake.speed) {
-                        cSnake.targetspeed += 0.3;
-                        if (cSnake.targetspeed > cSnake.speed) {
-                            cSnake.targetspeed = cSnake.speed;
+                    if (cSnake.targetspeed != cSnake.speed) {
+                        if (cSnake.targetspeed < cSnake.speed) {
+                            cSnake.targetspeed += 0.3;
+                            if (cSnake.targetspeed > cSnake.speed) {
+                                cSnake.targetspeed = cSnake.speed;
+                            }
+                        } else {
+                            cSnake.targetspeed -= 0.3;
+                            if (cSnake.targetspeed < cSnake.speed) {
+                                cSnake.targetspeed = cSnake.speed;
+                            }
+                        }
+                    }
+
+                    if (cSnake.dir == 1) {
+                        cSnake.actualAngle -= snakeDeltaAngle;
+                        cSnake.actualAngle %= PI2;
+                        if (cSnake.actualAngle < 0) {
+                            cSnake.actualAngle += PI2;
+                        }
+                        double angle2go = (cSnake.wantedAngle - cSnake.actualAngle) % PI2;
+                        if (angle2go < 0) {
+                            angle2go += PI2;
+                        }
+                        if (angle2go <= Math.PI) {
+                            cSnake.actualAngle = cSnake.wantedAngle;
+                            cSnake.dir = 0;
+                        }
+                    } else if (cSnake.dir == 2) {
+                        cSnake.actualAngle += snakeDeltaAngle;
+                        cSnake.actualAngle %= PI2;
+                        if (cSnake.actualAngle < 0) {
+                            cSnake.actualAngle += PI2;
+                        }
+                        double angle2go = (0.0) % PI2;
+                        if (angle2go < 0) {
+                            angle2go += PI2;
+                        }
+                        if (angle2go > Math.PI) {
+                            cSnake.actualAngle = cSnake.wantedAngle;
+                            cSnake.dir = 0;
                         }
                     } else {
-                        cSnake.targetspeed -= 0.3;
-                        if (cSnake.targetspeed < cSnake.speed) {
-                            cSnake.targetspeed = cSnake.speed;
+                        cSnake.actualAngle = cSnake.wantedAngle;
+                    }
+
+                    cSnake.x += Math.cos(cSnake.actualAngle) * snakeDistance;
+                    cSnake.y += Math.sin(cSnake.actualAngle) * snakeDistance;
+                });
+
+                // TODO: eahang
+                double preyDeltaAngle = preyAngularVelocityFactor * deltaTime;
+                activepreys.values().forEach(prey -> {
+                    double preyDistance = prey.speed * deltaTime / 4.0;
+
+                    if (prey.dir == 1) {
+                        prey.actualAngle -= preyDeltaAngle;
+                        prey.actualAngle %= PI2;
+                        if (prey.actualAngle < 0) {
+                            prey.actualAngle += PI2;
                         }
-                    }
-                }
-
-                if (cSnake.dir == 1) {
-                    cSnake.actualAngle -= snakeDeltaAngle;
-                    cSnake.actualAngle %= PI2;
-                    if (cSnake.actualAngle < 0) {
-                        cSnake.actualAngle += PI2;
-                    }
-                    double angle2go = (cSnake.wantedAngle - cSnake.actualAngle) % PI2;
-                    if (angle2go < 0) {
-                        angle2go += PI2;
-                    }
-                    if (angle2go <= Math.PI) {
-                        cSnake.actualAngle = cSnake.wantedAngle;
-                        cSnake.dir = 0;
-                    }
-                } else if (cSnake.dir == 2) {
-                    cSnake.actualAngle += snakeDeltaAngle;
-                    cSnake.actualAngle %= PI2;
-                    if (cSnake.actualAngle < 0) {
-                        cSnake.actualAngle += PI2;
-                    }
-                    double angle2go = (0.0) % PI2;
-                    if (angle2go < 0) {
-                        angle2go += PI2;
-                    }
-                    if (angle2go > Math.PI) {
-                        cSnake.actualAngle = cSnake.wantedAngle;
-                        cSnake.dir = 0;
-                    }
-                } else {
-                    cSnake.actualAngle = cSnake.wantedAngle;
-                }
-
-                cSnake.x += Math.cos(cSnake.actualAngle) * snakeDistance;
-                cSnake.y += Math.sin(cSnake.actualAngle) * snakeDistance;
-            });
-
-            // TODO: eahang
-            double preyDeltaAngle = preyAngularVelocityFactor * deltaTime;
-            activepreys.values().forEach(prey -> {
-                double preyDistance = prey.speed * deltaTime / 4.0;
-
-                if (prey.dir == 1) {
-                    prey.actualAngle -= preyDeltaAngle;
-                    prey.actualAngle %= PI2;
-                    if (prey.actualAngle < 0) {
-                        prey.actualAngle += PI2;
-                    }
-                    double angle2go = (prey.wantedAngle - prey.actualAngle) % PI2;
-                    if (angle2go < 0) {
-                        angle2go += PI2;
-                    }
-                    if (angle2go <= Math.PI) {
+                        double angle2go = (prey.wantedAngle - prey.actualAngle) % PI2;
+                        if (angle2go < 0) {
+                            angle2go += PI2;
+                        }
+                        if (angle2go <= Math.PI) {
+                            prey.actualAngle = prey.wantedAngle;
+                            prey.dir = 0;
+                        }
+                    } else if (prey.dir == 2) {
+                        prey.actualAngle += preyDeltaAngle;
+                        prey.actualAngle %= PI2;
+                        if (prey.actualAngle < 0) {
+                            prey.actualAngle += PI2;
+                        }
+                        double angle2go = (prey.wantedAngle - prey.actualAngle) % PI2;
+                        if (angle2go < 0) {
+                            angle2go += PI2;
+                        }
+                        if (angle2go > Math.PI) {
+                            prey.actualAngle = prey.wantedAngle;
+                            prey.dir = 0;
+                        }
+                    } else {
                         prey.actualAngle = prey.wantedAngle;
-                        prey.dir = 0;
                     }
-                } else if (prey.dir == 2) {
-                    prey.actualAngle += preyDeltaAngle;
-                    prey.actualAngle %= PI2;
-                    if (prey.actualAngle < 0) {
-                        prey.actualAngle += PI2;
-                    }
-                    double angle2go = (prey.wantedAngle - prey.actualAngle) % PI2;
-                    if (angle2go < 0) {
-                        angle2go += PI2;
-                    }
-                    if (angle2go > Math.PI) {
-                        prey.actualAngle = prey.wantedAngle;
-                        prey.dir = 0;
-                    }
-                } else {
-                    prey.actualAngle = prey.wantedAngle;
-                }
 
-                prey.x += Math.cos(prey.actualAngle) * preyDistance;
-                prey.y += Math.sin(prey.actualAngle) * preyDistance;
-            });
+                    prey.x += Math.cos(prey.actualAngle) * preyDistance;
+                    prey.y += Math.sin(prey.actualAngle) * preyDistance;
+                });
 
-            lastUpdateTime = newTime;
-        }
+                lastUpdateTime = newTime;
+            }
 
-        //check le mur du jeu et wrap around si besoin
-//            for (Snake snake : activesnakes.values()) {
-//                double headX = snake.x;
-//                double headY = snake.y;
-//
-//                // Wrap around logic
-//                if (headX < -worldBoundaryRadius) {
-//                    snake.x = worldBoundaryRadius;
-//                } else if (headX > worldBoundaryRadius) {
-//                    snake.x = -worldBoundaryRadius;
-//                }
-//
-//                if (headY < -worldBoundaryRadius) {
-//                    snake.y = worldBoundaryRadius;
-//                } else if (headY > worldBoundaryRadius) {
-//                    snake.y = -worldBoundaryRadius;
-//                }
-//            }
-
-
-//terrain sans bords :
-//            for (Snake snake : activesnakes.values()) {
-//                double headX = snake.x;
-//                double headY = snake.y;
-//
-//                // Check boundaries and wrap around if necessary
-//                if (headX < -worldBoundaryRadius) {
-//                    snake.x = worldBoundaryRadius - (headX % worldBoundaryRadius);
-//                } else if (headX > worldBoundaryRadius) {
-//                    snake.x = -worldBoundaryRadius + (headX % worldBoundaryRadius);
-//                }
-//
-//                if (headY < -worldBoundaryRadius) {
-//                    snake.y = worldBoundaryRadius - (headY % worldBoundaryRadius);
-//                } else if (headY > worldBoundaryRadius) {
-//                    snake.y = -worldBoundaryRadius + (headY % worldBoundaryRadius);
-//                }
-//            }
-
-
-
-
+            //check le mur du jeu et wrap around si besoin
             for (Snake snake : activesnakes.values()) {
                 double headX = snake.x;
                 double headY = snake.y;
-                double distanceFromCenter = Math.sqrt(headX * headX + headY * headY);
-                double visualBoundaryRadius = this.worldBoundaryRadius; // This should be the drawn boundary radius.
 
-                // If the snake's head is outside or exactly on the boundary, place it just inside.
-                if (distanceFromCenter >= visualBoundaryRadius) {
-                    double angleFromCenter = Math.atan2(headY, headX);
-                    double snakeHeadRadius = snake.getHeadRadius();
-                    double boundaryInset = visualBoundaryRadius - snakeHeadRadius - 1; // Subtract an extra pixel to ensure it's inside.
+                // Wrap around logic
+                if (headX < -worldBoundaryRadius) {
+                    snake.x = worldBoundaryRadius;
+                } else if (headX > worldBoundaryRadius) {
+                    snake.x = -worldBoundaryRadius;
+                }
 
-                    snake.x = Math.cos(angleFromCenter) * boundaryInset;
-                    snake.y = Math.sin(angleFromCenter) * boundaryInset;
+                if (headY < -worldBoundaryRadius) {
+                    snake.y = worldBoundaryRadius;
+                } else if (headY > worldBoundaryRadius) {
+                    snake.y = -worldBoundaryRadius;
                 }
             }
-
             checkFoodCollisions();
-    } catch (Exception e) {
-        e.printStackTrace(); // This will print any exceptions to the console
-    }
+        } catch (Exception e) {
+            e.printStackTrace(); // This will print any exceptions to the console
+        }
     }
 
-    public void addSnake(int snakeID, String name, double x, double y, double wantedAngle, double actualangle, double speed, double foodAmount, Deque<SnakeBody> body, Player player) {
+    void addSnake(int snakeID, String name, double x, double y, double wantedAngle, double actualangle, double speed, double foodAmount, Deque<SnakeBody> body) {
         synchronized (view != null ? view.modelLock : new Object()) {
-            Snake newSnake = new Snake(snakeID, name, x, y, wantedAngle, actualangle, speed, foodAmount, body, this, player);
+            Snake newSnake = new Snake(snakeID, name, x, y, wantedAngle, actualangle, speed, foodAmount, body, this);
             if (snake == null) {
                 snake = newSnake;
             }
             activesnakes.put(snakeID, newSnake);
         }
     }
-
-
-    //BOT
-    public void addBotSnakes(int numberOfBots) {
-        Random rand = new Random();
-        for (int i = 0; i < numberOfBots; i++) {
-            double x = (double) (rand.nextInt(worldBoundaryRadius * 2) - worldBoundaryRadius);
-            double y = (double) (rand.nextInt(worldBoundaryRadius * 2) - worldBoundaryRadius);
-            double angle = rand.nextDouble() * 2 * Math.PI;
-            Deque<SnakeBody> body = new ArrayDeque<>();
-            for (int j = 0; j < 10; j++) {
-                body.add(new SnakeBody(x, y));
-            }
-            BotSnake bot = new BotSnake(i, "Bot" + i, x, y, angle, angle, 4.0, 0.0, body, this, null);
-            activesnakes.put(bot.id, bot);
-        }
-    }
-
-
-
-
 
     void checkFoodCollisions() {
         Snake snake = this.snake;
@@ -392,12 +333,12 @@ class SlitherModel {
     }
 
     public void updatePlayerPosition(Snake player, Double angle, Boolean boost) {
+        // on assume que le joueur est un serpent
         if (snake != null) {
             snake.setDirection(angle);
             snake.setBoosting(boost);
         }
     }
-
 
     // In SlitherModel class
     public int getWorldBoundaryRadius() {
@@ -416,19 +357,10 @@ class SlitherModel {
     public void initializeGameState() {
         // Set up the initial state of the game, like adding snakes, food, and prey
         Deque<SnakeBody> snakeBodyQueue = new ArrayDeque<SnakeBody>();
- // Initialization values for the player snake
-        double playerStartX = (double) worldBoundaryRadius / 2; // Center X
-        double playerStartY = (double) worldBoundaryRadius / 2; // Center Y
-        double playerStartAngle = 0; // Initial angle
-        double playerStartSpeed = 5.0; // Initial speed
-        double playerStartFood = 0; // Initial food amount
-
-        PlayerKeyboard playerKeyboard = new PlayerKeyboard("Player1");
-        Deque<SnakeBody> playerBody = new ArrayDeque<>();
-        // ... add body parts to playerBody as necessary ...
-        addSnake(1, playerKeyboard.name, playerStartX, playerStartY, playerStartAngle, playerStartAngle, playerStartSpeed, playerStartFood, playerBody, playerKeyboard);
-
-
+// populate snakeBodyQueue with SnakeBody objects as needed
+        int centerX = worldBoundaryRadius / 2;
+        int centerY = worldBoundaryRadius / 2;
+        addSnake(1, "Player", centerX, centerY, 0, 0, 4.0, 0, snakeBodyQueue);
         System.out.println("Snake initialized");
         // Add initial food
         Random rand = new Random();
@@ -451,8 +383,5 @@ class SlitherModel {
                 addSector(i, j); // Activate all sectors for simplicity
             }
         }
-
-        //ADD bot
-        addBotSnakes(5);
     }
 }

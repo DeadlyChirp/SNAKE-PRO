@@ -21,7 +21,6 @@ import java.util.Deque;
 // avec des propriétés comme la position, la taille, la direction, la vitesse, etc.
 //une deque de partie du corps.
 public class Snake {
-    final int id; // id
     final String name;
     double x, y;
     int dir; // direction
@@ -34,6 +33,7 @@ public class Snake {
 
     private boolean boosting;
     public static final double MAX_SCALE = 10.0;
+    private int id;
 
     Snake(int id, String name, double x, double y, double wantedAngle, double actualAngle, double speed, double foodAmount, Deque<SnakeBody> body, SlitherModel gamemodel)  {
         this.id = id;
@@ -58,6 +58,9 @@ public class Snake {
     }
     double getTurnRadiusFactor() { //sert a calculer l'angle du serpent
         return 0.13 + 0.87 * Math.pow((7 - getScale()) / 6, 2);
+    }
+    public int getId() {
+        return id;
     }
 
     double getSpeedTurnFactor() { //sert a calculer la vitesse de rotation du serpent
@@ -192,4 +195,5 @@ public class Snake {
             this.speed = getBasespeed();
         }
     }
+
 }

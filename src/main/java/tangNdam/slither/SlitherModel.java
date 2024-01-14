@@ -2,6 +2,8 @@ package tangNdam.slither;
 
 import java.util.*;
 
+import static tangNdam.slither.BotSnake.random;
+
 
 class SlitherModel {
 
@@ -41,6 +43,8 @@ class SlitherModel {
     public  static final double DEFAULT_CST = 1.0;
     public static final int DEFAULT_MAX_SIZE_FOR_SPEED_CALCULATION = 100;
 
+    private int userSnakeId; // ID of the user's snake
+
 
     public SlitherModel(SlitherJFrame view) {
         this(DEFAULT_WORLD_BOUNDARY_RADIUS, DEFAULT_WORLD_SECTOR_SIZE,
@@ -62,6 +66,7 @@ class SlitherModel {
         this.preyAngularVelocityFactor = preyAngularVelocityFactor;
         this.maxSizeForSpeedCalculation = maxSizeForSpeedCalculation;
         this.view = view;
+        userSnakeId = 1;
         // Field to store the time of the last frame
         long lastFrameTime = System.currentTimeMillis();
 
@@ -81,6 +86,10 @@ class SlitherModel {
     int getSnakeLength(int bodyLength, double fillAmount) {
         bodyLength = Math.min(bodyLength, maxSizeForSpeedCalculation);
         return (int) (15 * (fpsls[bodyLength] + fillAmount * fmlts[bodyLength]));
+    }
+
+    public Snake getUserSnake() {
+        return getSnake(userSnakeId);
     }
 
     void update() {
@@ -238,18 +247,25 @@ class SlitherModel {
         }
     }
 
-    void addSnake(int snakeID, String name, double x, double y, double wantedAngle, double actualangle, double speed, double foodAmount, Deque<SnakeBody> body) {
-        synchronized (view != null ? view.modelLock : new Object()) {
-            Snake newSnake = new Snake(snakeID, name, x, y, wantedAngle, actualangle, speed, foodAmount, body, this);
-            if (snake == null) {
-                snake = newSnake;
-            }
-            activesnakes.put(snakeID, newSnake);
+    public void addSnake(int id, String name, int centerX, int centerY, int wantedAngle, int actualAngle, double speed, int foodAmount, Deque<SnakeBody> body) {
+        boolean isBot = (id != userSnakeId); // Check if the snake is a bot based on the ID
+        Snake newSnake;
+        if (isBot) {
+            newSnake = new BotSnake(id, name, centerX, centerY, wantedAngle, actualAngle, speed, foodAmount, body, this);
+        } else {
+            newSnake = new Snake(id, name, centerX, centerY, wantedAngle, actualAngle, speed, foodAmount, body, this);
+            this.userSnakeId = id; // Set the user's snake ID
         }
+        activesnakes.put(id, newSnake);
     }
 
     void checkFoodCollisions() {
-        Snake snake = this.snake;
+        // Check if the snake object is null before proceeding
+        if (this.snake == null) {
+            System.out.println("No snake object found. Exiting checkFoodCollisions method.");
+            return;
+        }
+
         double snakeHeadRadius = snake.getHeadRadius(); // Using the getHeadRadius method from Snake class
 
         List<Integer> foodToRemove = new ArrayList<>();
@@ -278,7 +294,6 @@ class SlitherModel {
             activefoods.remove(foodId);
         }
     }
-
 
     Snake getSnake(int snakeID) {
         return activesnakes.get(snakeID);
@@ -360,7 +375,8 @@ class SlitherModel {
 // populate snakeBodyQueue with SnakeBody objects as needed
         int centerX = worldBoundaryRadius / 2;
         int centerY = worldBoundaryRadius / 2;
-        addSnake(1, "Player", centerX, centerY, 0, 0, 4.0, 0, snakeBodyQueue);
+        this.snake = new Snake(1, "Player", centerX, centerY, 0, 0, 4.0, 0, snakeBodyQueue, this);
+        activesnakes.put(this.snake.getId(), this.snake);
         System.out.println("Snake initialized");
         // Add initial food
         Random rand = new Random();
@@ -372,10 +388,29 @@ class SlitherModel {
             addFood(x, y, 1, false);
         }
 
-        // Add initial prey
-        for (int i = 0; i < 10; i++) { // for example, add 10 prey
-            addPrey(i, (int) (Math.random() * 1000), (int) (Math.random() * 1000), 5, 1, Math.random() * 2 * Math.PI, Math.random() * 2 * Math.PI, 6); // Random position, direction and speed
+        int numberOfBots = 10; // for example
+
+        // Initialize bot snakes
+        for (int i = 0; i < numberOfBots; i++) {
+            // Generate random attributes for each bot
+            int botId = i + 2; // Start from 2 as 1 is used for the player's snake
+            String botName = "Bot" + botId;
+            double x = random.nextDouble() * worldBoundaryRadius;
+            double y = random.nextDouble() * worldBoundaryRadius;
+            double wantedAngle = random.nextDouble() * PI2;
+            double actualAngle = random.nextDouble() * PI2;
+            double speed = 4.0; // You can randomize this as well
+            int foodAmount = 0; // Initial food amount for the bot
+            Deque<SnakeBody> bodyQueue = new ArrayDeque<>(); // Initialize the body of the bot snake
+
+            // Create a new BotSnake object
+            BotSnake botSnake = new BotSnake(botId, botName, x, y, wantedAngle, actualAngle, speed, foodAmount, bodyQueue, this);
+
+            // Add the bot snake to the active snakes map
+            activesnakes.put(botId, botSnake);
         }
+
+
 
         // Setup the initial sectors
         for (int i = 0; i < sectors.length; i++) {

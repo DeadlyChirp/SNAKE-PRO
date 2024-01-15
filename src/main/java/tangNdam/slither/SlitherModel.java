@@ -19,7 +19,7 @@ class SlitherModel {
 
     final Map<Integer, Snake> activesnakes = new LinkedHashMap<>();
     final Map<Integer, Prey> activepreys = new LinkedHashMap<>();
-    final Map<Integer, Food> activefoods = new LinkedHashMap<>();
+    static final Map<Integer, Food> activefoods = new LinkedHashMap<>();
     final boolean[][] sectors;
 
     private long lastUpdateTime;

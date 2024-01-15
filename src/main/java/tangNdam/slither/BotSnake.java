@@ -15,13 +15,43 @@ public class BotSnake extends Snake {
 
     @Override
     public void update(double deltaTime) {
-        // Bot logic for changing direction
+        // Check for nearby food and set direction towards it
+        Food targetFood = findNearestFood();
+        if (targetFood != null) {
+            setDirectionTowardsFood(targetFood);
+        }
+
+        // Existing logic for changing direction
         if (changeDirectionCooldown <= 0) {
             changeDirection();
             changeDirectionCooldown = randomCooldown();
         }
         changeDirectionCooldown -= deltaTime;
+
         super.update(deltaTime);
+    }
+
+    private Food findNearestFood() {
+        // Find the nearest food. This is a simplified logic.
+        Food nearestFood = null;
+        double minDistance = Double.MAX_VALUE;
+        for (Food food : SlitherModel.activefoods.values()) {
+            double distance = calculateDistance(this.x, this.y, food.x, food.y);
+            if (distance < minDistance) {
+                minDistance = distance;
+                nearestFood = food;
+            }
+        }
+        return nearestFood;
+    }
+
+    private void setDirectionTowardsFood(Food food) {
+        double angleToFood = Math.atan2(food.y - this.y, food.x - this.x);
+        this.wantedAngle = angleToFood;
+    }
+
+    private double calculateDistance(double x1, double y1, double x2, double y2) {
+        return Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
     }
 
     private void changeDirection() {

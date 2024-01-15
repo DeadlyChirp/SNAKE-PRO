@@ -1,13 +1,7 @@
 package snek.rsrc.snek;
 
 
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.FontMetrics;
-import java.awt.Graphics;
-import java.awt.Image;
-import java.awt.Toolkit;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
@@ -52,14 +46,23 @@ public class Board extends JPanel implements ActionListener {
 
     private int speedIncrease = 10;
 
+    private Image background;
+    private int boardTopLeftX;
+    private int boardTopLeftY;
+
+
     public Board() {
-        int screenSize = Math.min(Toolkit.getDefaultToolkit().getScreenSize().width,
-                Toolkit.getDefaultToolkit().getScreenSize().height);
-        DOT_SIZE = screenSize / NUM_CELLS;
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        int screenWidth = screenSize.width;
+        int screenHeight = screenSize.height;
+        DOT_SIZE = Math.min(screenWidth, screenHeight) / NUM_CELLS;
         B_WIDTH = DOT_SIZE * NUM_CELLS;
         B_HEIGHT = DOT_SIZE * NUM_CELLS;
+        boardTopLeftX = (screenWidth - B_WIDTH) / 2;
+        boardTopLeftY = (screenHeight - B_HEIGHT) / 2;
         ALL_DOTS = NUM_CELLS * NUM_CELLS;
         RAND_POS = NUM_CELLS;
+        setPreferredSize(screenSize);
 
         x = new int[ALL_DOTS];
         y = new int[ALL_DOTS];
@@ -79,6 +82,11 @@ public class Board extends JPanel implements ActionListener {
     }
 
     private void loadImages() {
+
+        ImageIcon bg = new ImageIcon("src/main/java/snek/rsrc/backgroundSnake.png");
+        background = bg.getImage().getScaledInstance(B_WIDTH, B_HEIGHT, Image.SCALE_SMOOTH);
+
+
         ImageIcon iid = new ImageIcon(new ImageIcon("src/main/java/snek/rsrc/snekbody.png").getImage().getScaledInstance(DOT_SIZE, DOT_SIZE, Image.SCALE_SMOOTH));
         ball = iid.getImage();
 
@@ -103,7 +111,7 @@ public class Board extends JPanel implements ActionListener {
         dots = 3;
 
         for (int z = 0; z < dots; z++) {
-            x[z] = 0 - z * DOT_SIZE; // Start at 0 and go left for each subsequent dot
+            x[z] = -z * DOT_SIZE; // Start at 0 and go left for each subsequent dot
             y[z] = DOT_SIZE; // Start one DOT_SIZE down from the top
         }
 
@@ -113,20 +121,35 @@ public class Board extends JPanel implements ActionListener {
         timer.start();
         updateScore();
     }
+    public int getB_WIDTH() {
+        return B_WIDTH;
+    }
+
+    public int getB_HEIGHT() {
+        return B_HEIGHT;
+    }
 
 
     @Override
-    public void paintComponent(Graphics g) {
+    protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-
+        // The background should be drawn without any translation
+        if (background != null) {
+            g.drawImage(background, 0, 0, getWidth(), getHeight(), this);
+        } else {
+            System.out.println("Background image is not loaded.");
+        }
         doDrawing(g);
     }
+
+
+
 
     private void doDrawing(Graphics g) {
         // Define colors for the checkerboard pattern
         Color lightColor = new Color(208, 232, 161);  // A lighter green
         Color darkColor = new Color(129, 140, 112);   // A darker green
-
+        g.drawImage(background, 0, 0, this);
         // Draw the checkerboard pattern
         for (int row = 0; row < B_HEIGHT / DOT_SIZE; row++) {
             for (int col = 0; col < B_WIDTH / DOT_SIZE; col++) {
@@ -184,8 +207,6 @@ public class Board extends JPanel implements ActionListener {
     }
 
 
-
-
     private void drawScore(Graphics g) {
         String msg = "Score: " + score;
         Font font = new Font("Digital-7bo", Font.ITALIC, 12);
@@ -228,7 +249,7 @@ public class Board extends JPanel implements ActionListener {
         }
     }
     private void updateScore() {
-        score = (dots - 3) * 1;
+        score = (dots - 3);
     }
 
     private void move() {
@@ -261,6 +282,7 @@ public class Board extends JPanel implements ActionListener {
 
             if ((z > 4) && (x[0] == x[z]) && (y[0] == y[z])) {
                 inGame = false;
+                break;
             }
         }
 

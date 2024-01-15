@@ -214,6 +214,8 @@ public class GameMenu extends JFrame {
                 ((JButton) upPanel.getComponent(1)).requestFocus();
             } else if (e.getKeyCode() == KeyEvent.VK_DOWN) {
                 ((JButton) downPanel.getComponent(1)).requestFocus();
+            } else if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+                currentButton.doClick();
             }
         }
 

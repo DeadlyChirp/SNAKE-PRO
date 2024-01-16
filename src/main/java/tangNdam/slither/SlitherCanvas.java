@@ -279,7 +279,11 @@ public class SlitherCanvas extends JPanel { // JPanel est une classe de Swing
         g.setFont(DEBUG_FONT);
         g.setColor(FOREGROUND_COLOR);
         g.drawString("FPS: " + Math.round(fps) + "  Press esc to exit", 10, 20);
-        // Any other UI elements you want to draw
+        if (model != null) {
+            int numberOfBots = model.getNumberOfBots();
+            String botsText = "Bots left: " + numberOfBots;
+            g.drawString(botsText, 10, 40); // Display it below the FPS
+        }
     }
 
     private void storeLastRepaintTime() {

@@ -111,15 +111,22 @@ public class Snake {
 
     // Call this method to update the snake's position and body
     public void update(double deltaTime) {
+        // Convert the Deque to an array for indexed access
+        SnakeBody[] bodyArray = body.toArray(new SnakeBody[0]);
+
         // Update the head position based on the direction
         double speedMultiplier = 2.0; // Adjust this multiplier as needed
         double headX = x + Math.cos(wantedAngle) * speed * deltaTime * speedMultiplier;
         double headY = y + Math.sin(wantedAngle) * speed * deltaTime * speedMultiplier;
 
-        // Update the body segments
+        // Store previous position
         double prevX = x;
         double prevY = y;
-        for (SnakeBody bodyPart : body) {
+
+        // Update the body segments
+        for (int i = 0; i < bodyArray.length; i++) {
+            SnakeBody bodyPart = bodyArray[i];
+
             // Calculate the distance to the previous segment
             double dist = distance(prevX, prevY, bodyPart.x, bodyPart.y);
             // Calculate the target distance
@@ -137,7 +144,6 @@ public class Snake {
             prevX = bodyPart.x;
             prevY = bodyPart.y;
         }
-
 
         // Update the head position
         x = headX;

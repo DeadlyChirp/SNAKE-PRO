@@ -300,13 +300,48 @@ class SlitherModel {
     }
 
     void createPellets(Snake snake) {
-        // Convert each body part of the snake into a pellet (Food object)
-        double pelletSize = Math.max(0.5, snake.getScale() / 10);
+        double pelletSize = Math.max(0.5, snake.getScale() / 10); // Calculate pellet size
 
         for (SnakeBody bodyPart : snake.body) {
+            // Add a pellet at the position of each body part
             addFood((int) bodyPart.x, (int) bodyPart.y, pelletSize, false);
         }
     }
+
+    public int getNumberOfBots() {
+        int botCount = 0;
+        for (Snake snake : activesnakes.values()) {
+            if (snake instanceof BotSnake) {
+                botCount++;
+            }
+        }
+        return botCount;
+    }
+
+//    private void spawnNewBot() {
+//        int botId = activesnakes.size() + 1; // Generate a unique ID
+//        String botName = "Bot" + botId;
+//        double x = random.nextDouble() * worldBoundaryRadius;
+//        double y = random.nextDouble() * worldBoundaryRadius;
+//        double wantedAngle = random.nextDouble() * PI2;
+//        double actualAngle = random.nextDouble() * PI2;
+//        double speed = 4.0;
+//        int foodAmount = 0;
+//        Deque<SnakeBody> bodyQueue = new ArrayDeque<>();
+//
+//        BotSnake botSnake = new BotSnake(botId, botName, x, y, wantedAngle, actualAngle, speed, foodAmount, bodyQueue, this);
+//        activesnakes.put(botId, botSnake);
+//    }
+//
+//    // Method to maintain the number of bots in the game
+//    public void maintainBotPopulation() {
+//        int numberOfBots = getNumberOfBots();
+//        int botsToSpawn = 10 - numberOfBots; // Ensure a maximum of 10 bots
+//        for (int i = 0; i < botsToSpawn; i++) {
+//            spawnNewBot();
+//        }
+//    }
+
 
     public void addSnake(int id, String name, int centerX, int centerY, int wantedAngle, int actualAngle, double speed, int foodAmount, Deque<SnakeBody> body) {
         boolean isBot = (id != userSnakeId); // Check if the snake is a bot based on the ID

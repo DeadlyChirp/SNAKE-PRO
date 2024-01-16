@@ -45,7 +45,10 @@ class SlitherModel {
 
     private int userSnakeId; // ID of the user's snake
 
-    private static final double PELLET_SIZE = 1.0;
+
+
+    private Timer foodRespawnTimer;
+    private final long foodRespawnDelay = 3000;
 
 
     public SlitherModel(SlitherJFrame view) {
@@ -81,13 +84,34 @@ class SlitherModel {
             fmlts[i] = 1 / (base * base * Math.sqrt(Math.sqrt(base)));
             fpsls[i + 1] = fpsls[i] + fmlts[i];
         }
-
+        initializeFoodRespawnTimer();
         lastUpdateTime = System.currentTimeMillis();
+
     }
 
     int getSnakeLength(int bodyLength, double fillAmount) {
         bodyLength = Math.min(bodyLength, maxSizeForSpeedCalculation);
         return (int) (15 * (fpsls[bodyLength] + fillAmount * fmlts[bodyLength]));
+    }
+
+
+    private void initializeFoodRespawnTimer() {
+        foodRespawnTimer = new Timer();
+        foodRespawnTimer.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                spawnRandomFood();
+            }
+        }, 0, foodRespawnDelay); // Schedule the task to run every 5 seconds
+    }
+
+    private void spawnRandomFood() {
+        Random rand = new Random();
+        double angle = rand.nextDouble() * Math.PI * 2;
+        double radius = rand.nextDouble() * worldBoundaryRadius;
+        int x = (int) (Math.cos(angle) * radius);
+        int y = (int) (Math.sin(angle) * radius);
+        addFood(x, y, 1, false);
     }
 
     public Snake getUserSnake() {
@@ -475,8 +499,10 @@ class SlitherModel {
         activesnakes.put(this.snake.getId(), this.snake);
         System.out.println("Snake initialized");
         // Add initial food
+        int initialFoodCount = 500; // Increase this number as needed
+
         Random rand = new Random();
-        for (int i = 0; i < 200; i++) {
+        for (int i = 0; i < initialFoodCount; i++) {
             double angle = rand.nextDouble() * Math.PI * 2;
             double radius = rand.nextDouble() * worldBoundaryRadius;
             int x = (int) (Math.cos(angle) * radius);
@@ -505,8 +531,6 @@ class SlitherModel {
             // Add the bot snake to the active snakes map
             activesnakes.put(botId, botSnake);
         }
-
-
 
         // Setup the initial sectors
         for (int i = 0; i < sectors.length; i++) {

@@ -8,9 +8,9 @@ import java.awt.event.KeyEvent;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.util.ArrayDeque;
+import java.awt.image.BufferedImage;
+import java.util.*;
 import java.util.Timer;
-import java.util.TimerTask;
 
 import static tangNdam.slither.SlitherModel.*;
 
@@ -167,7 +167,28 @@ private static final String[] SNAKES = {
         requestFocusInWindow();
     }
 
+//    private static final Map<String, Image> SKIN_MAP = new HashMap<>();
+//    static {
+//        // Populate the SKIN_MAP with name-to-image mappings
+//        SKIN_MAP.put("00 - purple", loadImage("path/to/purple_skin.png"));
+//        SKIN_MAP.put("01 - blue", loadImage("path/to/blue_skin.png"));
+//        SKIN_MAP.put("02 - cyan", loadImage("path/to/cyan_skin.png"));
+//        SKIN_MAP.put("03 - green", loadImage("path/to/green_skin.png"));
+//        SKIN_MAP.put("04 - yellow", loadImage("path/to/yellow_skin.png"));
+//        SKIN_MAP.put("05 - orange", loadImage("path/to/orange_skin.png"));
+//        SKIN_MAP.put("06 - salmon", loadImage("path/to/salmon_skin.png"));
+//        SKIN_MAP.put("07 - red", loadImage("path/to/red_skin.png"));
+//    }
 
+    private static BufferedImage loadImage(String path) {
+        ImageIcon icon = new ImageIcon(path);
+        Image img = icon.getImage();
+        BufferedImage bufferedImage = new BufferedImage(img.getWidth(null), img.getHeight(null), BufferedImage.TYPE_INT_ARGB);
+        Graphics g = bufferedImage.createGraphics();
+        g.drawImage(img, 0, 0, null);
+        g.dispose();
+        return bufferedImage;
+    }
 
     private void setupLayout() {
         setLayout(new BorderLayout());

@@ -35,6 +35,8 @@ public class Snake {
     public static final double MAX_SCALE = 10.0;
     private int id;
 
+
+
     Snake(int id, String name, double x, double y, double wantedAngle, double actualAngle, double speed, double foodAmount, Deque<SnakeBody> body, SlitherModel gamemodel)  {
         this.id = id;
         this.name = name;

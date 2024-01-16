@@ -10,6 +10,7 @@ import java.util.Collections;
 
 public class GameMenu extends JFrame {
 
+
     public GameMenu() {
         initMenu();
     }
@@ -36,6 +37,13 @@ public class GameMenu extends JFrame {
         g2d.dispose();
         return bufferedImage;
     }
+
+    public void showMainMenu() {
+        setContentPane(new MainMenuPanel());
+        revalidate();
+        repaint();
+    }
+
 
     class MainMenuPanel extends JPanel {
         private JPanel playButton;
@@ -130,7 +138,11 @@ public class GameMenu extends JFrame {
                 } else if ("Credits".equals(text)) {
                     newWindow = new JFrame(); // Assuming CreditsDisplay is a JFrame
                 } else if ("Options".equals(text)) {
-                    newWindow = new JFrame(); // Assuming OptionsDisplay is a JFrame
+                    JFrame optionsMenu = new OptionsDisplay();
+                    optionsMenu.setExtendedState(JFrame.MAXIMIZED_BOTH);
+                    optionsMenu.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                    optionsMenu.setVisible(true);
+                    GameMenu.this.dispose();// Assuming PlayMenu is a JFrame
                 } else if ("Quit".equals(text)) {
                     System.exit(0); // Exit the application
                     return;
@@ -218,7 +230,6 @@ public class GameMenu extends JFrame {
                 currentButton.doClick();
             }
         }
-
 
         @Override
         protected void paintComponent(Graphics g) {

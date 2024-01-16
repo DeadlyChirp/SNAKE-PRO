@@ -98,6 +98,24 @@ public class PlayMenu extends JFrame {
             snakeClassicLabel.setBounds(centerLeftX, centerY + labelYOffset, leftImage.getWidth(), 30);
             futurSnakeLabel.setBounds(centerRightX, centerY + labelYOffset, rightImage.getWidth(), 30);
 
+            BufferedImage returnButtonImage = loadImage("src/main/java/tangNdam/slither/images/backbtn.png"); // Replace with your image path
+            ImageIcon returnIcon = new ImageIcon(returnButtonImage);
+
+            // Create the return button and set the icon
+            JButton returnButton = new JButton(returnIcon);
+            returnButton.setBorder(BorderFactory.createEmptyBorder());
+            returnButton.setContentAreaFilled(false);
+            returnButton.setFocusPainted(false);
+            returnButton.addActionListener(e -> {
+                PlayMenu.this.dispose(); // Close the current PlayMenu
+                new GameMenu().setVisible(true); // Open a new GameMenu
+            });
+
+            // Set the position of the return button at the top left
+            returnButton.setBounds(10, 10, returnIcon.getIconWidth(), returnIcon.getIconHeight()); // Adjust as needed
+            this.add(returnButton);
+
+
             // Add the panels to the layout
             this.add(leftPanel);
             this.add(rightPanel);

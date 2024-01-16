@@ -9,8 +9,14 @@ import java.io.InputStream;
 
 public class AudioPlayer {
     private Player mp3Player;
+    private String mp3FilePath;
 
     public AudioPlayer(String mp3FilePath) {
+        this.mp3FilePath = mp3FilePath;
+        initializePlayer();
+    }
+
+    private void initializePlayer() {
         try {
             InputStream is = new FileInputStream(mp3FilePath);
             mp3Player = new Player(is);
@@ -20,20 +26,24 @@ public class AudioPlayer {
     }
 
     public void playMusic() {
-        if (mp3Player != null) {
-            new Thread(() -> {
-                try {
-                    mp3Player.play();
-                } catch (JavaLayerException e) {
-                    e.printStackTrace();
-                }
-            }).start();
+        if (mp3Player == null) {
+            initializePlayer();
         }
+        new Thread(() -> {
+            try {
+                if (mp3Player != null) {
+                    mp3Player.play();
+                }
+            } catch (JavaLayerException e) {
+                e.printStackTrace();
+            }
+        }).start();
     }
 
     public void stopMusic() {
         if (mp3Player != null) {
             mp3Player.close();
+            mp3Player = null;
         }
     }
 

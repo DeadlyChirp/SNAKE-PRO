@@ -2,6 +2,7 @@ package tangNdam.slither;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ComponentEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
@@ -12,22 +13,33 @@ public class OptionsDisplay extends JFrame {
     private BufferedImage background;
     private AudioPlayer audioPlayer;
 
+
+
     public OptionsDisplay() {
+        this.audioPlayer = new AudioPlayer("src/main/java/tangNdam/slither/images/gamemusic.mp3");
         initMenu();
     }
 
-    public OptionsDisplay(BufferedImage unmuteImage, BufferedImage muteImage, BufferedImage background) {
+
+
+    public OptionsDisplay(BufferedImage unmuteImage, BufferedImage muteImage, BufferedImage background, AudioPlayer audioPlayer) {
         this.unmuteImage = unmuteImage;
         this.muteImage = muteImage;
         this.background = background;
+        this.audioPlayer = audioPlayer; // Set the audio player
 
         setExtendedState(JFrame.MAXIMIZED_BOTH);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        OptionsPanel panel = new OptionsPanel(unmuteImage, muteImage, background, this);
+        OptionsPanel panel = new OptionsPanel(unmuteImage, muteImage, background, this, audioPlayer);
         setContentPane(panel);
 
         setVisible(true);
+    }
+
+    public OptionsDisplay(AudioPlayer audioPlayer) {
+        this.audioPlayer = audioPlayer;
+        initMenu();
     }
 
     private void initMenu() {
@@ -35,13 +47,16 @@ public class OptionsDisplay extends JFrame {
         muteImage = loadImage("src/main/java/tangNdam/slither/images/mute.png");
         background = loadImage("src/main/java/tangNdam/slither/images/bgopt.png");
 
+        if (this.audioPlayer == null) {
+            this.audioPlayer = new AudioPlayer("path/to/your/audio/file.mp3"); // Update with correct path
+        }
+
         setExtendedState(JFrame.MAXIMIZED_BOTH);
         setUndecorated(true);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        OptionsPanel panel = new OptionsPanel(unmuteImage, muteImage, background, this);
+        OptionsPanel panel = new OptionsPanel(unmuteImage, muteImage, background, this, audioPlayer);
         setContentPane(panel);
-
         setVisible(true);
     }
 
@@ -60,10 +75,13 @@ public class OptionsDisplay extends JFrame {
         private BufferedImage muteImage;
         private BufferedImage background;
         private OptionsDisplay parentFrame;
-        private boolean isMusicPlaying = true; // Initial state is playing
-        private boolean isUnmuted = true; // Initial state is unmuted
 
-        public OptionsPanel(BufferedImage unmuteImage, BufferedImage muteImage, BufferedImage background, OptionsDisplay parentFrame) {
+        private boolean isUnmuted = true; // Initial state is unmuted
+        private AudioPlayer audioPlayer;
+        private ImagePanel unmutePanel; // Declare as instance variable
+        private ImagePanel mutePanel;
+        public OptionsPanel(BufferedImage unmuteImage, BufferedImage muteImage, BufferedImage background, OptionsDisplay parentFrame, AudioPlayer audioPlayer) {
+            this.audioPlayer = audioPlayer;
             this.unmuteImage = unmuteImage;
             this.muteImage = muteImage;
             this.background = background;
@@ -72,22 +90,23 @@ public class OptionsDisplay extends JFrame {
             setLayout(null); // Set the layout to null for absolute positioning
 
             // Create the unmute and mute image panels
-            ImagePanel unmutePanel = new ImagePanel(unmuteImage);
-            ImagePanel mutePanel = new ImagePanel(muteImage);
+            unmutePanel = new ImagePanel(unmuteImage);
+            mutePanel = new ImagePanel(muteImage);
 
             // Calculate positions based on screen size and image dimensions
-            int centerX = getWidth() / 2;
-            int centerY = getHeight() / 2;
+            int spaceBetween = 50; // Space between buttons
+            int panelWidth = unmuteImage.getWidth() + spaceBetween + muteImage.getWidth();
+            int startX = (getWidth() - panelWidth) / 2; // To center the buttons together
 
-            int unmutePanelX = centerX - unmuteImage.getWidth() / 2; // Center horizontally
-            int unmutePanelY = centerY - unmuteImage.getHeight() / 2; // Center vertically
+            int unmutePanelX = startX;
+            int mutePanelX = startX + unmuteImage.getWidth() + spaceBetween;
 
-            int mutePanelX = centerX + unmuteImage.getWidth() / 2 + 10; // Adjust as needed
-            int mutePanelY = centerY - muteImage.getHeight() / 2; // Center vertically
+            // Assuming you want to center the buttons vertically as well
+            int panelY = (getHeight() - unmuteImage.getHeight()) / 2;
 
-            // Set bounds for the image panels
-            unmutePanel.setBounds(unmutePanelX, unmutePanelY, unmuteImage.getWidth(), unmuteImage.getHeight());
-            mutePanel.setBounds(mutePanelX, mutePanelY, muteImage.getWidth(), muteImage.getHeight());
+            // Now use setBounds to position the image panels
+            unmutePanel.setBounds(unmutePanelX, panelY, unmuteImage.getWidth(), unmuteImage.getHeight());
+            mutePanel.setBounds(mutePanelX, panelY, muteImage.getWidth(), muteImage.getHeight());
 
             // Add the image panels to this OptionsPanel
             add(unmutePanel);
@@ -112,37 +131,57 @@ public class OptionsDisplay extends JFrame {
             // Add a mouse listener to the unmute and mute panels
             unmutePanel.setClickAction(() -> {
                 if (isUnmuted) {
-                    audioPlayer.stopMusic(); // Stop music when unmute is clicked
+                    audioPlayer.stopMusic(); // Stop music if currently unmuted
                     isUnmuted = false;
                 } else {
-                    audioPlayer.playMusic(); // Start music when mute is clicked
+                    audioPlayer.playMusic(); // Start music if currently muted
                     isUnmuted = true;
                 }
                 repaint();
             });
 
             mutePanel.setClickAction(() -> {
-                if (isUnmuted) {
-                    audioPlayer.playMusic(); // Start music when mute is clicked
-                    isUnmuted = false;
-                } else {
-                    audioPlayer.stopMusic(); // Stop music when unmute is clicked
+                if (!isUnmuted) {
+                    audioPlayer.playMusic(); // Start music
                     isUnmuted = true;
+                } else {
+                    audioPlayer.stopMusic(); // Stop music
+                    isUnmuted = false;
                 }
                 repaint();
             });
+
+            addComponentListener(new java.awt.event.ComponentAdapter() {
+                public void componentResized(java.awt.event.ComponentEvent evt) {
+                    updateButtonPositions();
+                }
+            });
         }
+
+
 
         @Override
         protected void paintComponent(Graphics g) {
             super.paintComponent(g);
-            // Draw the background image to fill the entire panel
             g.drawImage(background, 0, 0, getWidth(), getHeight(), this);
 
-            // Draw the appropriate image (unmute or mute) based on the current state
-            BufferedImage currentImage = isUnmuted ? unmuteImage : muteImage;
-            g.drawImage(currentImage, (getWidth() - currentImage.getWidth()) / 2, (getHeight() - currentImage.getHeight()) / 2, this);
+
         }
+
+        private void updateButtonPositions() {
+            int spaceBetween = 50; // Space between buttons
+            int panelWidth = unmuteImage.getWidth() + spaceBetween + muteImage.getWidth();
+            int startX = (getWidth() - panelWidth) / 2; // To center the buttons together
+
+            int unmutePanelX = startX;
+            int mutePanelX = startX + unmuteImage.getWidth() + spaceBetween;
+            int panelY = (getHeight() - unmuteImage.getHeight()) / 2;
+
+            // Set bounds for the image panels
+            unmutePanel.setBounds(unmutePanelX, panelY, unmuteImage.getWidth(), unmuteImage.getHeight());
+            mutePanel.setBounds(mutePanelX, panelY, muteImage.getWidth(), muteImage.getHeight());
+        }
+
     }
 
     static class ImagePanel extends JPanel {
@@ -152,7 +191,6 @@ public class OptionsDisplay extends JFrame {
         public ImagePanel(BufferedImage image) {
             this.image = image;
             setOpaque(false);
-            setSize(image.getWidth(), image.getHeight());
             setPreferredSize(new Dimension(image.getWidth(), image.getHeight()));
             addMouseListener(new MouseAdapter() {
                 @Override
@@ -164,14 +202,14 @@ public class OptionsDisplay extends JFrame {
             });
         }
 
+        public void setClickAction(Runnable action) {
+            this.clickAction = action;
+        }
+
         @Override
         protected void paintComponent(Graphics g) {
             super.paintComponent(g);
             g.drawImage(image, 0, 0, getWidth(), getHeight(), this);
-        }
-
-        public void setClickAction(Runnable action) {
-            this.clickAction = action;
         }
     }
 }

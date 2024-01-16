@@ -5,6 +5,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 
+
 import java.awt.geom.*;
 import javax.swing.*;
 import java.util.Timer;
@@ -114,6 +115,7 @@ public class SlitherCanvas extends JPanel { // JPanel est une classe de Swing
                 mouseInput.readWang(e);
             }
         });
+        
 
         addMouseListener(new MouseAdapter() {
             @Override
@@ -276,7 +278,7 @@ public class SlitherCanvas extends JPanel { // JPanel est une classe de Swing
     private void drawUIElements(Graphics2D g) {
         g.setFont(DEBUG_FONT);
         g.setColor(FOREGROUND_COLOR);
-        g.drawString("FPS: " + Math.round(fps), 10, 20);
+        g.drawString("FPS: " + Math.round(fps) + "  Press esc to exit", 10, 20);
         // Any other UI elements you want to draw
     }
 

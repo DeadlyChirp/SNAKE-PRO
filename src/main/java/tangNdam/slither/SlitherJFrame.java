@@ -2,6 +2,8 @@ package tangNdam.slither;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 
 import java.awt.*;
 import java.awt.event.WindowAdapter;
@@ -150,6 +152,19 @@ private static final String[] SNAKES = {
                 // Any other cleanup if necessary
             }
         });
+
+        addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_ESCAPE) { // Exit on escape key
+                    SlitherJFrame.this.dispose();
+                    GameMenu menu = new GameMenu();
+                    menu.setVisible(true);
+                }
+            }
+        });
+        setFocusable(true);
+        requestFocusInWindow();
     }
 
 

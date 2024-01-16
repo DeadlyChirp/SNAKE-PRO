@@ -8,7 +8,10 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 import javax.swing.Timer;
+
+import tangNdam.slither.GameMenu;
 
 public class Board extends JPanel implements ActionListener {
 
@@ -223,7 +226,7 @@ public class Board extends JPanel implements ActionListener {
 
     private void gameOver(Graphics g) {
 
-        String msg = "Game Over."+ "\n" +"Buy starter pack to win!";
+        String msg = "Game Over."+ "\n" +"Buy starter pack to win!\n Press ENTER to play again, press ESC to exit";
         Font small = new Font("Digital-7", Font.BOLD, 18);
         FontMetrics metr = getFontMetrics(small);
 
@@ -355,6 +358,28 @@ public class Board extends JPanel implements ActionListener {
                 downDirection = true;
                 rightDirection = false;
                 leftDirection = false;
+            }
+            
+
+            if (key == KeyEvent.VK_ESCAPE) {
+                Window window = SwingUtilities.getWindowAncestor(Board.this);
+                if (window != null) {
+                    window.setVisible(false);
+                    window.dispose();
+                }
+                GameMenu menu = new GameMenu();
+                menu.setVisible(true);
+            }
+
+            if (key == KeyEvent.VK_ENTER) {
+                if (!inGame) {
+                    inGame = true;
+                    leftDirection = false;
+                    rightDirection = true;
+                    upDirection = false;
+                    downDirection = false;
+                    initGame();
+                }
             }
         }
     }

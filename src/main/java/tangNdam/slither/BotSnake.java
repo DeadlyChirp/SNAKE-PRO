@@ -1,6 +1,8 @@
 package tangNdam.slither;
 
+import java.util.ArrayList;
 import java.util.Deque;
+import java.util.List;
 import java.util.Random;
 
 public class BotSnake extends Snake {
@@ -28,7 +30,32 @@ public class BotSnake extends Snake {
         }
         changeDirectionCooldown -= deltaTime;
 
+        checkAndEatFood();
+
         super.update(deltaTime);
+    }
+
+    private void checkAndEatFood() {
+        List<Integer> foodToRemove = new ArrayList<>();
+        SlitherModel.activefoods.entrySet().forEach(entry -> {
+            int foodId = entry.getKey();
+            Food food = entry.getValue();
+            double dx = this.x - food.x;
+            double dy = this.y - food.y;
+            double distance = Math.sqrt(dx * dx + dy * dy);
+            if (distance < this.getHeadRadius() + food.getRadius()) {
+                foodToRemove.add(foodId);
+                // Increase food amount
+                this.setFood(this.getFood() + food.getSize());
+                // Add new body part
+                double newBodyPartX = this.x; // Adjust position calculation as needed
+                double newBodyPartY = this.y;
+                this.body.addLast(new SnakeBody(newBodyPartX, newBodyPartY));
+            }
+        });
+
+        // Remove eaten food from the game
+        foodToRemove.forEach(foodId -> SlitherModel.activefoods.remove(foodId));
     }
 
     private Food findNearestFood() {

@@ -30,7 +30,4 @@ public class Food {
             return (1 - Math.cos(Math.PI * fillRate)) / 2 * size;
         }
     }
-
-
-
 }

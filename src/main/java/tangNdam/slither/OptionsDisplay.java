@@ -43,12 +43,12 @@ public class OptionsDisplay extends JFrame {
     }
 
     private void initMenu() {
-        unmuteImage = loadImage("src/main/java/tangNdam/slither/images/unmute.png");
-        muteImage = loadImage("src/main/java/tangNdam/slither/images/mute.png");
+        unmuteImage = loadImage("src/main/java/tangNdam/slither/images/unmute1.png");
+        muteImage = loadImage("src/main/java/tangNdam/slither/images/mute1.png");
         background = loadImage("src/main/java/tangNdam/slither/images/bgopt.png");
 
         if (this.audioPlayer == null) {
-            this.audioPlayer = new AudioPlayer("path/to/your/audio/file.mp3"); // Update with correct path
+            this.audioPlayer = new AudioPlayer("src/main/java/tangNdam/slither/images/gamemusic.mp3"); // Update with correct path
         }
 
         setExtendedState(JFrame.MAXIMIZED_BOTH);
@@ -130,22 +130,17 @@ public class OptionsDisplay extends JFrame {
 
             // Add a mouse listener to the unmute and mute panels
             unmutePanel.setClickAction(() -> {
-                if (isUnmuted) {
-                    audioPlayer.stopMusic(); // Stop music if currently unmuted
-                    isUnmuted = false;
-                } else {
-                    audioPlayer.playMusic(); // Start music if currently muted
+                if (!isUnmuted) {
+                    audioPlayer.playMusic(); // Start music when currently muted
                     isUnmuted = true;
                 }
                 repaint();
             });
 
+// Add a mouse listener to the mute panel
             mutePanel.setClickAction(() -> {
-                if (!isUnmuted) {
-                    audioPlayer.playMusic(); // Start music
-                    isUnmuted = true;
-                } else {
-                    audioPlayer.stopMusic(); // Stop music
+                if (isUnmuted) {
+                    audioPlayer.stopMusic(); // Stop music when currently unmuted
                     isUnmuted = false;
                 }
                 repaint();

@@ -45,6 +45,8 @@ class SlitherModel {
 
     private int userSnakeId; // ID of the user's snake
 
+    private static final double PELLET_SIZE = 1.0;
+
 
     public SlitherModel(SlitherJFrame view) {
         this(DEFAULT_WORLD_BOUNDARY_RADIUS, DEFAULT_WORLD_SECTOR_SIZE,
@@ -179,7 +181,6 @@ class SlitherModel {
                     cSnake.y += Math.sin(cSnake.actualAngle) * snakeDistance;
                 });
 
-                // TODO: eahang
                 double preyDeltaAngle = preyAngularVelocityFactor * deltaTime;
                 activepreys.values().forEach(prey -> {
                     double preyDistance = prey.speed * deltaTime / 4.0;
@@ -242,8 +243,68 @@ class SlitherModel {
                 }
             }
             checkFoodCollisions();
+            checkSnakeCollisions();
         } catch (Exception e) {
             e.printStackTrace(); // This will print any exceptions to the console
+        }
+    }
+
+    void checkSnakeCollisions() {
+        List<Integer> snakesToRemove = new ArrayList<>();
+
+        for (Snake snake : activesnakes.values()) {
+            for (Snake otherSnake : activesnakes.values()) {
+                if (snake != otherSnake && isHeadCollidingWithBody(snake, otherSnake)) {
+                    snakesToRemove.add(snake.getId());
+                    createPellets(snake);
+                }
+            }
+        }
+
+        // Handle head-on collisions
+        for (Snake snake1 : activesnakes.values()) {
+            for (Snake snake2 : activesnakes.values()) {
+                if (snake1 != snake2 && isHeadCollidingWithHead(snake1, snake2)) {
+                    snakesToRemove.add(snake1.getId());
+                    snakesToRemove.add(snake2.getId());
+                    createPellets(snake1);
+                    createPellets(snake2);
+                }
+            }
+        }
+
+        snakesToRemove.forEach(this::removeSnake);
+    }
+    boolean isHeadCollidingWithBody(Snake snake, Snake otherSnake) {
+        double headX = snake.x;
+        double headY = snake.y;
+        double headRadius = snake.getHeadRadius();
+
+        for (SnakeBody bodyPart : otherSnake.body) {
+            double dx = headX - bodyPart.x;
+            double dy = headY - bodyPart.y;
+            double distance = Math.sqrt(dx * dx + dy * dy);
+            if (distance < headRadius) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    boolean isHeadCollidingWithHead(Snake snake1, Snake snake2) {
+        double dx = snake1.x - snake2.x;
+        double dy = snake1.y - snake2.y;
+        double distance = Math.sqrt(dx * dx + dy * dy);
+        double combinedRadius = snake1.getHeadRadius() + snake2.getHeadRadius();
+        return distance < combinedRadius;
+    }
+
+    void createPellets(Snake snake) {
+        // Convert each body part of the snake into a pellet (Food object)
+        double pelletSize = Math.max(0.5, snake.getScale() / 10);
+
+        for (SnakeBody bodyPart : snake.body) {
+            addFood((int) bodyPart.x, (int) bodyPart.y, pelletSize, false);
         }
     }
 

@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.util.Collections;
 
 public class GameMenu extends JFrame {
-
+    private static OptionsDisplay optionsDisplay = null;
 
     public GameMenu() {
         initMenu();
@@ -103,7 +103,6 @@ public class GameMenu extends JFrame {
             button.setContentAreaFilled(false);
             button.setForeground(Color.ORANGE);
             button.setFont(customFont);
-            button.addActionListener(e -> onButtonClicked(e, text));
 
             buttonPanel.add(leftArrowLabel, BorderLayout.WEST);
             buttonPanel.add(button, BorderLayout.CENTER);
@@ -127,35 +126,10 @@ public class GameMenu extends JFrame {
             int height = Math.max(buttonSize.height, arrowSize.height);
             buttonPanel.setMaximumSize(new Dimension(width, height));
 
-            button.addActionListener(e -> {
-                JFrame newWindow = null;
-                if ("Play".equals(text)) {
-                    JFrame playMenu = new PlayMenu();
-                    playMenu.setExtendedState(JFrame.MAXIMIZED_BOTH);
-                    playMenu.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-                    playMenu.setVisible(true);
-                    GameMenu.this.dispose();// Assuming PlayMenu is a JFrame
-                } else if ("Credits".equals(text)) {
-                    newWindow = new JFrame(); // Assuming CreditsDisplay is a JFrame
-                } else if ("Options".equals(text)) {
-                    JFrame optionsMenu = new OptionsDisplay();
-                    optionsMenu.setExtendedState(JFrame.MAXIMIZED_BOTH);
-                    optionsMenu.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-                    optionsMenu.setVisible(true);
-                    GameMenu.this.dispose();// Assuming PlayMenu is a JFrame
-                } else if ("Quit".equals(text)) {
-                    System.exit(0); // Exit the application
-                    return;
-                }
 
-                // If a new window is created, show it and dispose of the current GameMenu
-                if (newWindow != null) {
-                    newWindow.setVisible(true);
-                    newWindow.setSize(800, 600); // Set the size of the new window or pack it
-                    newWindow.setLocationRelativeTo(null); // Center it
-                    GameMenu.this.dispose(); // Dispose the current GameMenu
-                }
-            });
+
+            button.addActionListener(e -> onButtonClicked(text));
+
 
             // Add focus listener to the button to show/hide the arrows
             button.addFocusListener(new FocusAdapter() {
@@ -175,9 +149,40 @@ public class GameMenu extends JFrame {
             return buttonPanel;
         }
 
-        private void onButtonClicked(ActionEvent e, String button) {
-            System.out.println(button + " button clicked");
-            // Implement your button actions here
+        private void onButtonClicked(String button) {
+            if ("Options".equals(button)) {
+                EventQueue.invokeLater(() -> {
+                    if (GameMenu.optionsDisplay == null || !GameMenu.optionsDisplay.isVisible()) {
+                        GameMenu.optionsDisplay = new OptionsDisplay();
+                        GameMenu.optionsDisplay.setExtendedState(JFrame.MAXIMIZED_BOTH);
+                        GameMenu.optionsDisplay.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                        GameMenu.optionsDisplay.setVisible(true);
+                    } else {
+                        GameMenu.optionsDisplay.toFront();
+                    }
+                });
+                GameMenu.this.dispose();
+            } else if ("Play".equals(button)) {
+                // Launch the Play Menu
+                EventQueue.invokeLater(() -> {
+                    JFrame playMenu = new PlayMenu(); // Assuming PlayMenu is a JFrame or similar
+                    playMenu.setExtendedState(JFrame.MAXIMIZED_BOTH);
+                    playMenu.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                    playMenu.setVisible(true);
+                    GameMenu.this.dispose();
+                });
+            } else if ("Credits".equals(button)) {
+                // Show Credits
+                EventQueue.invokeLater(() -> {
+                    JFrame creditsDisplay = new JFrame(); // Assuming CreditsDisplay is a JFrame or similar
+                    creditsDisplay.setExtendedState(JFrame.MAXIMIZED_BOTH);// Set size as needed
+                    creditsDisplay.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // Center it
+                    creditsDisplay.setVisible(true);
+                    GameMenu.this.dispose();
+                });
+            } else if ("Quit".equals(button)) {
+                System.exit(0); // Exit the application
+            }
         }
 
 

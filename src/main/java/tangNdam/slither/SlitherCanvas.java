@@ -338,15 +338,46 @@ public class SlitherCanvas extends JPanel { // JPanel est une classe de Swing
     }
 
     private void drawFoods(Graphics2D g) {
-        g.setColor(FOOD_COLOR);
+        // Scale factor to increase the size of the food
+        double scaleFactor = 3;  // You can adjust this value to increase or decrease the size
+
+        Color[] vibrantColors = new Color[]{
+                new Color(0xFF4500), // Orange-Red
+                new Color(0x32CD32), // Lime Green
+                new Color(0x00FA9A), // Medium Spring Green
+                new Color(0x1E90FF), // Dodger Blue
+                new Color(0x9400D3), // Dark Violet
+                // Add more colors as desired
+        };
         model.activefoods.values().forEach(food -> {
-            Ellipse2D.Double shape = new Ellipse2D.Double(food.x - food.getRadius(),
-                    food.y - food.getRadius(),
-                    2 * food.getRadius(),
-                    2 * food.getRadius());
-            g.fill(shape);
+            Color foodColor = vibrantColors[(int) (Math.random() * vibrantColors.length)];
+
+            RadialGradientPaint paint = new RadialGradientPaint(
+                    new Point2D.Double(food.x, food.y),
+                    (float) (food.getRadius() * scaleFactor * 1.5f), // Apply scale factor here
+                    new float[]{0.0f, 1.0f},
+                    new Color[]{foodColor, new Color(foodColor.getRed(), foodColor.getGreen(), foodColor.getBlue(), 0)}
+            );
+
+            g.setPaint(paint);
+            g.fill(new Ellipse2D.Double(
+                    food.x - food.getRadius() * scaleFactor,  // Apply scale factor here
+                    food.y - food.getRadius() * scaleFactor,  // Apply scale factor here
+                    2 * food.getRadius() * scaleFactor,       // Apply scale factor here
+                    2 * food.getRadius() * scaleFactor        // Apply scale factor here
+            ));
+            g.setColor(foodColor.brighter());
+            g.fill(new Ellipse2D.Double(
+                    food.x - food.getRadius() * scaleFactor * 0.5,  // Apply scale factor here
+                    food.y - food.getRadius() * scaleFactor * 0.5,  // Apply scale factor here
+                    food.getRadius() * scaleFactor,                 // Apply scale factor here
+                    food.getRadius() * scaleFactor                  // Apply scale factor here
+            ));
         });
     }
+
+
+
 
     private void drawPreys(Graphics2D g) {
         model.activepreys.values().forEach(prey -> {
@@ -389,7 +420,7 @@ public class SlitherCanvas extends JPanel { // JPanel est une classe de Swing
         double minimapScale = (double) minimapSize / (model.worldBoundaryRadius * 2);
 
         // Draw all food on the minimap within the circular boundary
-        for (Food food : model.activefoods.values()) {
+        for (Food food : SlitherModel.activefoods.values()) {
             double foodMinimapX = (food.x + model.worldBoundaryRadius) * minimapScale;
             double foodMinimapY = (food.y + model.worldBoundaryRadius) * minimapScale;
 

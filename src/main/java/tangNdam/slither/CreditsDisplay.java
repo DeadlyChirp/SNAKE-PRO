@@ -2,7 +2,7 @@ package tangNdam.slither;
 
 import javax.swing.*;
 
-public class CreditsDisplay {
+public class CreditsDisplay extends JFrame {
     private JPanel mainPanel;
     public CreditsDisplay() {
         mainPanel = new JPanel();

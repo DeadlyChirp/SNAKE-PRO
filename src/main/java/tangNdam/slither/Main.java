@@ -8,18 +8,12 @@ public class Main {
     private static AudioPlayer player;
 
     public static void main(String[] args) {
-        EventQueue.invokeLater(() -> {
-            OptionsDisplay optionsDisplay = new OptionsDisplay(player);
-            optionsDisplay.setVisible(true);
-        });
+
 
 
         EventQueue.invokeLater(() -> {
             GameMenu menu = new GameMenu();
             menu.setVisible(true);
         });
-    }
-    public static AudioPlayer getPlayer() {
-        return player;
     }
 }
